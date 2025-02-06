@@ -12,4 +12,4 @@ python3 -m pip install -U pip
 python3 -m pip install -r requirements.txt
 
 # Run a glorious Python 3 server
-python3 wpp/server.py
+python3 app/main.py
