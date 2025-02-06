@@ -1,11 +1,11 @@
-from agent import create_agent
+from app.services.agent import create_agent
 
 from config import BASE_URL
 
 import requests
 from langchain_core.messages import HumanMessage
 
-def main(number: str, user_input: str):
+def inicializar_agente(number: str, user_input: str):
 
     phone_number = "3413918906"
     # user_input = "15.30hs"
@@ -63,9 +63,3 @@ def main(number: str, user_input: str):
     print("\n ==================== Fin mensaje ====================================================")
 
     return ai_response
-        
-
-
-
-if __name__ == "__main__":
-    main()

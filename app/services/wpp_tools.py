@@ -1,8 +1,6 @@
 import requests
 import json
-import time
-from wpp.server import WHATSAPP_TOKEN, WHATSAPP_URL
-from agents.main import main
+from app.main import WHATSAPP_TOKEN, WHATSAPP_URL
 
 # Para argentina al recibir el numero llega '549..' pero para enviar se encesita '54..'   
 def replace_start(s):
@@ -232,25 +230,4 @@ def send_location(number, latitude, longitude, location_name, adress):
     )
     return data
       
-
-# Logica del Bot
-def administrar_chatbot(text,number, messageId, name):
-    text = text.lower() #mensaje que envio el usuario
-    list = []
-    print("mensaje del usuario: ",text)
-
-    markRead = markRead_Message(messageId)
-    list.append(markRead)
-
-    # Enviamos al bot el mensaje del usuario
-    body = main(number, text)
-    print(body)
-    listReplyData = text_message(number,text)
-    list.append(listReplyData)
         
-
-
-  
-        
-        
-    
