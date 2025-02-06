@@ -1,8 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException
 import app.services.wpp_tools as wpp_tools
-import os
 
-from app.services.agent_initialazer import inicializar_agente
+from app.services.agent_initializer import agent_initializer
 from app.config import TOKEN, WHATSAPP_TOKEN, WHATSAPP_URL
 
 
@@ -42,16 +41,15 @@ async def recibir_mensajes(request: Request):
 
         text = text.lower() #mensaje que envio el usuario
         list = []
-        print("mensaje del usuario: ",text)
+        print("Mensaje del usuario: ",text)
 
         list.append(wpp_tools.markRead_Message(messageId))
 
         # Enviamos al bot el mensaje del usuario
-        body = inicializar_agente(number, text)
-        print(body)
+        agent_answer = agent_initializer(number, text)
+        print(f"Mensaje de IA: {agent_answer}")
         listReplyData = wpp_tools.text_message(number,text)
         list.append(listReplyData)
-
 
 
         return {"status": "enviado"}

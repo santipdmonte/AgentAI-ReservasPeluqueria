@@ -5,7 +5,7 @@ from config import BASE_URL
 import requests
 from langchain_core.messages import HumanMessage
 
-def inicializar_agente(number: str, user_input: str):
+def agent_initializer(number: str, user_input: str):
 
     phone_number = "3413918906"
     # user_input = "15.30hs"

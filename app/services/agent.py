@@ -1,28 +1,21 @@
 from langchain_openai import ChatOpenAI
-
 from langchain_core.messages import HumanMessage
-
-from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import MessagesState, StateGraph, START, END
 from langgraph.prebuilt import ToolNode
-from langgraph.types import Command, interrupt
-
-# from langchain_core.messages import ToolMessage
-# from langchain_core.tools import InjectedToolCallId, tool
-
-from prompts import prompt_template, prompt_template2
-
 from schemas import State
-from tools import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, crear_usuario
-
 import requests
-
-from config import OPENAI_API_KEY, LANGCHAIN_API_KEY, BASE_URL, DB_URI, fecha_hora_actual, nombre_dia 
 import os
 
 from langgraph.checkpoint.postgres import PostgresSaver
-from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+# from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from psycopg_pool import ConnectionPool
+
+from app.services.prompts import prompt_template, prompt_template2
+from app.services.tools import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, crear_usuario
+
+from app.config import OPENAI_API_KEY, LANGCHAIN_API_KEY, BASE_URL, DB_URI  
+from app.utils.helpers import fecha_hora_actual, nombre_dia
+
 
 def create_agent():
 
@@ -90,9 +83,7 @@ def create_agent():
     workflow.add_edge("action", "agent")
     
 
-    # checkpointer = MemorySaver()
-    # app = workflow.compile(checkpointer=memory)
-
+    # ==== Checkpointer ====
     connection_kwargs = {
         "autocommit": True,
         "prepare_threshold": 0,
@@ -104,7 +95,6 @@ def create_agent():
         kwargs=connection_kwargs,
     )
         
-
     checkpointer = PostgresSaver(pool)
     # checkpointer.setup()
 
@@ -112,58 +102,7 @@ def create_agent():
     return workflow.compile(checkpointer=checkpointer)
 
 
-    # ==== Setup user data ====
-    try:
-        url = f"{BASE_URL}usuarios/telefono/{phone_number}"
-        print(url)
-
-        response = requests.get(url)
-        if response.status_code == 200:
-            user_data = response.json()
-            print("Usuario encontrado:", user_data)
-
-        else:
-            print("Error:", response.status_code, response.json())
-
-    except requests.RequestException as e:
-            print("Error en la solicitud:", e)
-
-    if user_data:
-        name = user_data['nombre']
-        user_id = user_data['id']
-    else:
-        # Crear un nuevo usuario
-        pass
-
-
-    # user_input = input("\nHuman: ")
-                
-    if user_input.lower() in ['salir', 'exit', 'q']:
-        print("Saliendo del chat...")
-        
-    # Validar entrada
-    if not user_input.strip():
-        print("Por favor, escribe un mensaje.")
-        
-    initial_state = {
-        'user_id': user_id,
-        'name': name,
-        'phone_number': phone_number,
-        "messages": [HumanMessage(content=user_input)]
-    }
-
-    # Ejecutar flujo
-    message = app.invoke(
-        initial_state,
-        config
-        # ,stream_mode="values"
-    )
-
-    return message.content
-
-
-
-
+    
     # ==== Chat Loop ====
     try:
         while True:
