@@ -1,6 +1,6 @@
 import requests
 import json
-from app.main import WHATSAPP_TOKEN, WHATSAPP_URL
+from app.config import WHATSAPP_TOKEN, WHATSAPP_URL
 
 # Para argentina al recibir el numero llega '549..' pero para enviar se encesita '54..'   
 def replace_start(s):

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, HTTPException
 import app.services.wpp_tools as wpp_tools
 
 from app.services.agent_initializer import agent_initializer
-from app.config import TOKEN, WHATSAPP_TOKEN, WHATSAPP_URL
+from app.config import TOKEN
 
 
 app = FastAPI(title="Agent de Peluquería", version="1.0")
@@ -58,6 +58,7 @@ async def recibir_mensajes(request: Request):
         
 
 
+# python -m uvicorn app.main:app --reload
 
 if __name__ == "__main__":
     import uvicorn

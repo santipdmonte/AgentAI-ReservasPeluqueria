@@ -1,9 +1,10 @@
-from app.services.agent import create_agent
-
-from config import BASE_URL
-
 import requests
 from langchain_core.messages import HumanMessage
+
+from app.services.agent import create_agent
+from app.config import BASE_URL
+
+
 
 def agent_initializer(number: str, user_input: str):
 
