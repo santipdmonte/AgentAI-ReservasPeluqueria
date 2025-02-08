@@ -11,6 +11,5 @@ TOKEN = os.getenv("TOKEN")
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 WHATSAPP_URL = os.getenv("WHATSAPP_URL")
 
-BASE_URL = "http://localhost:8000/"
-
+BASE_URL = os.getenv("BASE_URL")
 
