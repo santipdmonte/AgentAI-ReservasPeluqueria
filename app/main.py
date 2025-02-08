@@ -11,6 +11,13 @@ app = FastAPI(title="Agent de Peluquería", version="1.0")
 def bienvenido():
     return {"message": "Hola mundo"}
 
+@app.get("/test")
+def bienvenido():
+
+    result = agent_initializer(222, "Hola queria hacer una reserva, que turnos tenes para estos dias?")
+
+    return {"message": result}    
+
 @app.get("/webhook")
 def verificar_token(hub_verify_token: str, hub_challenge: str = None):
     try:

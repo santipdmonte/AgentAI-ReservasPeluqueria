@@ -8,7 +8,7 @@ from app.config import BASE_URL
 
 def agent_initializer(number: str, user_input: str):
 
-    phone_number = "3413918906"
+    phone_number = "3413918907"
     # user_input = "15.30hs"
 
     app = create_agent()
