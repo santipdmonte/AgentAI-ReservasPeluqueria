@@ -12,19 +12,20 @@ def bienvenido():
     return {"message": "Hola mundo"}
 
 @app.get("/test")
-def bienvenido():
+def test():
 
-    result = agent_initializer(222, "Hola queria hacer una reserva, que turnos tenes para estos dias?")
+    result = agent_initializer(222, "si, 18hs")
 
     return {"message": result}    
 
 @app.get("/webhook")
 def verificar_token(hub_verify_token: str, hub_challenge: str = None):
     try:
-        if hub_verify_token == TOKEN and hub_challenge is not None:
-            return hub_challenge
-        else:
+        if hub_verify_token != TOKEN:
             raise HTTPException(status_code=403, detail="Token incorrecto")
+        if hub_challenge is None:
+            raise HTTPException(status_code=403, detail="hub_challenge is null")
+        return hub_challenge
     except Exception as e:
         raise HTTPException(status_code=403, detail=str(e))
 
