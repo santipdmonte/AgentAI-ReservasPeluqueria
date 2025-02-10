@@ -39,51 +39,134 @@ async def verificar_token(request: Request):
     except Exception as e:
         return PlainTextResponse(str(e), status_code=403)
 
+# @app.post("/webhook")
+# async def recibir_mensajes(
+#     request: Request
+#     # ,txt_message: str = None
+#     ):
+#     try:
+#         # if txt_message:
+#         #     message = txt_message
+#         #     agent_answer = agent_initializer("3413918907", message)
+#         #     return agent_answer
+#         # return {"status": "enviado"}
+
+#         body = await request.json()
+#         entry = body['entry'][0]
+#         changes = entry['changes'][0]
+#         value = changes['value']
+#         message = value['messages'][0]
+#         number = wpp_tools.replace_start(message['from'])
+#         messageId = message['id']
+#         contacts = value['contacts'][0]
+#         name = contacts['profile']['name']
+#         text = wpp_tools.obtener_mensaje_whatsapp(message)
+
+
+#         text = text.lower() # Mensaje que envio el usuario
+#         list = []
+
+#         # Marcar el mensaje como leído
+#         list.append(wpp_tools.markRead_Message(messageId))
+
+#         # Enviamos al bot el mensaje del usuario
+#         agent_answer = agent_initializer(number, text)
+
+#         # Enviamos la respuesta del bot al usuario
+#         listReplyData = wpp_tools.text_message(number, agent_answer)
+#         list.append(listReplyData)
+
+#         for item in list:
+#             wpp_tools.enviar_mensaje_whatsapp(item)
+
+
+#         return {"status": "enviado"}
+#     except Exception as e:
+#         raise HTTPException(status_code=400, detail=f"no enviado: {str(e)}")
+
+
+from fastapi.responses import JSONResponse
+import logging
+# Configurar logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 @app.post("/webhook")
-async def recibir_mensajes(
-    request: Request
-    # ,txt_message: str = None
-    ):
+async def recibir_mensajes(request: Request):
     try:
-        # if txt_message:
-        #     message = txt_message
-        #     agent_answer = agent_initializer("3413918907", message)
-        #     return agent_answer
-        # return {"status": "enviado"}
-
+        # Obtener y loggear el body completo
         body = await request.json()
-        entry = body['entry'][0]
-        changes = entry['changes'][0]
-        value = changes['value']
-        message = value['messages'][0]
-        number = wpp_tools.replace_start(message['from'])
-        messageId = message['id']
-        contacts = value['contacts'][0]
-        name = contacts['profile']['name']
-        text = wpp_tools.obtener_mensaje_whatsapp(message)
+        logger.debug(f"Mensaje recibido: {body}")
 
+        # Validar estructura básica del mensaje
+        if "entry" not in body or not body["entry"]:
+            logger.warning("Mensaje recibido sin entradas")
+            return JSONResponse(content={"status": "ok"}, status_code=200)
 
-        text = text.lower() # Mensaje que envio el usuario
-        list = []
+        # Extraer información del mensaje
+        try:
+            entry = body['entry'][0]
+            changes = entry['changes'][0]
+            value = changes['value']
 
-        # Marcar el mensaje como leído
-        list.append(wpp_tools.markRead_Message(messageId))
+            # Verificar si hay mensajes
+            if 'messages' not in value:
+                logger.info("Mensaje recibido sin contenido de mensajes - podría ser una actualización de estado")
+                return JSONResponse(content={"status": "ok"}, status_code=200)
 
-        # Enviamos al bot el mensaje del usuario
-        agent_answer = agent_initializer(number, text)
+            message = value['messages'][0]
+            
+            # Procesar la información del mensaje
+            number = wpp_tools.replace_start(message['from'])
+            messageId = message['id']
+            contacts = value['contacts'][0]
+            name = contacts['profile']['name']
+            text = wpp_tools.obtener_mensaje_whatsapp(message)
+            
+            logger.info(f"Mensaje recibido de {name} ({number}): {text}")
 
-        # Enviamos la respuesta del bot al usuario
-        listReplyData = wpp_tools.text_message(number, agent_answer)
-        list.append(listReplyData)
+            # Procesar el mensaje
+            text = text.lower()
+            response_list = []
 
-        for item in list:
-            wpp_tools.enviar_mensaje_whatsapp(item)
+            # Marcar como leído
+            read_response = wpp_tools.markRead_Message(messageId)
+            response_list.append(read_response)
+            logger.debug(f"Mensaje marcado como leído: {messageId}")
 
+            # Obtener respuesta del bot
+            agent_answer = agent_initializer(number, text)
+            logger.debug(f"Respuesta del bot: {agent_answer}")
 
-        return {"status": "enviado"}
+            # Preparar respuesta para el usuario
+            reply_data = wpp_tools.text_message(number, agent_answer)
+            response_list.append(reply_data)
+
+            # Enviar mensajes
+            for item in response_list:
+                result = wpp_tools.enviar_mensaje_whatsapp(item)
+                logger.debug(f"Resultado del envío: {result}")
+
+            return JSONResponse(content={"status": "enviado", "message": "Mensaje procesado correctamente"}, status_code=200)
+
+        except KeyError as e:
+            logger.warning(f"Estructura de mensaje inesperada: {str(e)}")
+            return JSONResponse(content={"status": "ok"}, status_code=200)
+
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"no enviado: {str(e)}")
+        logger.error(f"Error procesando mensaje: {str(e)}")
+        # Log del error completo para debugging
+        import traceback
+        logger.error(traceback.format_exc())
         
+        # En producción, mejor devolver 200 para evitar reintentos de WhatsApp
+        return JSONResponse(
+            content={
+                "status": "error",
+                "detail": str(e)
+            },
+            status_code=200  # Cambiado de 400 a 200 para evitar reintentos
+        )  
 
 
 # python -m uvicorn app.main:app --reload
