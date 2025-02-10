@@ -51,7 +51,6 @@ async def recibir_mensajes(
         #     return agent_answer
         # return {"status": "enviado"}
 
-        text = wpp_tools.obtener_mensaje_whatsapp(message)
         body = await request.json()
         entry = body['entry'][0]
         changes = entry['changes'][0]
@@ -61,11 +60,10 @@ async def recibir_mensajes(
         messageId = message['id']
         contacts = value['contacts'][0]
         name = contacts['profile']['name']
+        text = wpp_tools.obtener_mensaje_whatsapp(message)
 
-        
-        # wpp_tools.administrar_chatbot(text, number, messageId, name)
 
-        text = text.lower() #mensaje que envio el usuario
+        text = text.lower() # Mensaje que envio el usuario
         list = []
         print("Mensaje del usuario: ",text)
 
