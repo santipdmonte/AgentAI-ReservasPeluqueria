@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, Query
 import app.services.wpp_tools as wpp_tools
 
 from app.services.agent_initializer import agent_initializer
@@ -19,7 +19,12 @@ def test():
     return {"message": result}    
 
 @app.get("/webhook")
-def verificar_token(hub_verify_token: str, hub_challenge: str = None):
+def verificar_token(
+        hub_verify_token: str = Query(..., alias="hub.verify_token"),
+        hub_challenge: str = Query(..., alias="hub.challenge")
+        # hub_verify_token: str, 
+        # hub_challenge: str = None
+):
     try:
         if hub_verify_token != TOKEN:
             raise HTTPException(status_code=403, detail="Token incorrecto")
