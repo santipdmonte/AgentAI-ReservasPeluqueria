@@ -20,17 +20,23 @@ def test():
 
 @app.get("/webhook")
 def verificar_token(
+        request: Request,
         hub_verify_token: str = Query(..., alias="hub.verify_token"),
         hub_challenge: str = Query(..., alias="hub.challenge")
         # hub_verify_token: str, 
         # hub_challenge: str = None
 ):
+
+    # Get query parameters using their exact names from Facebook
+    verify_token = request.query_params.get("hub.verify_token")
+    challenge = request.query_params.get("hub.challenge")
+
     try:
-        if hub_verify_token != TOKEN:
+        if verify_token != TOKEN:
             raise HTTPException(status_code=403, detail="Token incorrecto")
-        if hub_challenge is None:
+        if challenge is None:
             raise HTTPException(status_code=403, detail="hub_challenge is null")
-        return hub_challenge
+        return challenge
     except Exception as e:
         raise HTTPException(status_code=403, detail=str(e))
 
