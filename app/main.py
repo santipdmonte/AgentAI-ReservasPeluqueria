@@ -65,15 +65,19 @@ async def recibir_mensajes(
 
         text = text.lower() # Mensaje que envio el usuario
         list = []
-        print("Mensaje del usuario: ",text)
 
+        # Marcar el mensaje como leído
         list.append(wpp_tools.markRead_Message(messageId))
 
         # Enviamos al bot el mensaje del usuario
         agent_answer = agent_initializer(number, text)
-        print(f"Mensaje de IA: {agent_answer}")
-        listReplyData = wpp_tools.text_message(number,text)
+
+        # Enviamos la respuesta del bot al usuario
+        listReplyData = wpp_tools.text_message(number, agent_answer)
         list.append(listReplyData)
+
+        for item in list:
+            wpp_tools.enviar_mensaje_whatsapp(item)
 
 
         return {"status": "enviado"}
