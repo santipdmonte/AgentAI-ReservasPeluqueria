@@ -27,12 +27,12 @@ def crear_reserva(reservation_info: Reservation):
             return (f"Turno creado correctamente: {response.json()}")
         
         else:
-            print (f"Error: {response.status_code} {response.json()}")
-            return (f"Error: {response.status_code} {response.json()}")
+            print (f"Error al crear el turno: {response.status_code} {response.json()}")
+            return (f"Error al crear el turno: {response.status_code} {response.json()}")
 
     except requests.RequestException as e:
-        print (f"Error en la solicitud: {e}")
-        return (f"Error en la solicitud: {e}")
+        print (f"Error en la solicitud al crear el turno: {e}")
+        return (f"Error en la solicitudal crear el turno: {e}")
     
 
 
@@ -61,12 +61,12 @@ def crear_usuario(user_info: UserInfo):
             return (f"Uruario creado correctamente: {user_data}")
         
         else:
-            print(f"Error: {response.status_code} {response.json()}")
-            return (f"Error: {response.status_code} {response.json()}")
+            print(f"Error al crear el usuario: {response.status_code} {response.json()}")
+            return (f"Error al crear el usuario: {response.status_code} {response.json()}")
 
     except requests.RequestException as e:
-        print (f"Error en la solicitud: {e}")
-        return (f"Error en la solicitud: {e}")
+        print (f"Error en la solicitud al crear el usuario: {e}")
+        return (f"Error en la solicitud al crear el usuario: {e}")
 
 
 
@@ -85,11 +85,11 @@ def obtener_reservas_del_cliente(user_id: str):
             return user_data
         
         else:
-            print("Error:", response.status_code, response.json())
-            return ("Error:", response.status_code, response.json())
+            print("Error al obtener las reservas del cliente:", response.status_code, response.json())
+            return ("Error al obtener las reservas del cliente:", response.status_code, response.json())
         
     except requests.RequestException as e:
-        print("Error en la solicitud:", e)
+        print("Error en la solicitud al obtener las reservas del cliente:", e)
         return None
 
 
@@ -117,12 +117,12 @@ def modificar_reserva(reservation_id: str, reservation_info: Reservation):
             return (f"Turno modificado correctamente: {response.json()}")
         
         else:
-            print (f"Error: {response.status_code} {response.json()}")
-            return (f"Error: {response.status_code} {response.json()}")
+            print (f"Error al modificar el turno: {response.status_code} {response.json()}")
+            return (f"Error al modificar el turno: {response.status_code} {response.json()}")
 
     except requests.RequestException as e:
-        print (f"Error en la solicitud: {e}")
-        return (f"Error en la solicitud: {e}")
+        print (f"Error en la solicitud al modificar el turno: {e}")
+        return (f"Error en la solicitud al modificar el turno: {e}")
 
 
 
@@ -142,11 +142,11 @@ def cancelar_reserva(reservation_id: str):
             return "Reserva cancelada con exito!"
         
         else:
-            print("Error:", response.status_code, response.json())
-            return ("Error:", response.status_code, response.json())
+            print("Error al cancelar la reserva: ", response.status_code, response.json())
+            return ("Error al cancelar la reserva: ", response.status_code, response.json())
         
     except requests.RequestException as e:
-        print("Error en la solicitud:", e)
+        print("Error en la solicitud al cancelar la reserva: ", e)
         return None
 
 
@@ -166,9 +166,9 @@ def encontrar_horarios_disponibles(query: FindFreeSpaces):
             return response.json()
         
         else:
-            print("Error:", response.status_code, response.json())
+            print("Error al buscar horarios disponibles: ", response.status_code, response.json())
             return ("Error:", response.status_code, response.json())
         
     except requests.RequestException as e:
-        print("Error en la solicitud:", e)
+        print("Error en la solicitud al buscar horarios disponibles: ", e)
         return None
