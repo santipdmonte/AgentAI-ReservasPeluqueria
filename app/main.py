@@ -19,28 +19,6 @@ def test():
 
     return {"message": result}    
 
-# @app.get("/webhook")
-# def verificar_token(
-#         request: Request,
-#         # hub_verify_token: str = Query(..., alias="hub.verify_token"),
-#         # hub_challenge: str = Query(..., alias="hub.challenge")
-#         # hub_verify_token: str, 
-#         # hub_challenge: str = None
-# ):
-
-#     # Get query parameters using their exact names from Facebook
-#     verify_token = request.query_params.get("hub.verify_token")
-#     challenge = request.query_params.get("hub.challenge")
-
-#     try:
-#         if verify_token != TOKEN:
-#             raise HTTPException(status_code=403, detail="Token incorrecto")
-#         if challenge is None:
-#             raise HTTPException(status_code=403, detail="hub_challenge is null")
-#         return challenge
-#     except Exception as e:
-#         raise HTTPException(status_code=403, detail=str(e))
-
 @app.get("/webhook", response_class=PlainTextResponse)
 async def verificar_token(request: Request):
     try:
@@ -59,13 +37,17 @@ async def verificar_token(request: Request):
         return PlainTextResponse(str(e), status_code=403)
 
 @app.post("/webhook")
-async def recibir_mensajes(request: Request):
+async def recibir_mensajes(
+    request: Request,
+    txt_message: str = None):
     try:
         body = await request.json()
         entry = body['entry'][0]
         changes = entry['changes'][0]
         value = changes['value']
         message = value['messages'][0]
+        if txt_message:
+            message = txt_message
         number = wpp_tools.replace_start(message['from'])
         messageId = message['id']
         contacts = value['contacts'][0]
