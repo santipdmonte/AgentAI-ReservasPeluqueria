@@ -96,11 +96,13 @@ async def recibir_mensajes(request: Request):
     try:
         # Obtener y loggear el body completo
         body = await request.json()
-        logger.debug(f"\nMensaje recibido: {body}")
+
+        logger.debug(f"\n ========= Mensaje recibido =========================== ")
+        logger.debug(f"\n\nMensaje recibido: {body}")
 
         # Validar estructura básica del mensaje
         if "entry" not in body or not body["entry"]:
-            logger.warning("\nMensaje recibido sin entradas")
+            logger.warning("\n\nMensaje recibido sin entradas")
             return JSONResponse(content={"status": "ok"}, status_code=200)
 
         # Extraer información del mensaje
@@ -111,19 +113,19 @@ async def recibir_mensajes(request: Request):
 
             # Verificar si hay mensajes
             if 'messages' not in value:
-                logger.info("\nMensaje recibido sin contenido de mensajes - podría ser una actualización de estado")
+                logger.info("\n\nMensaje recibido sin contenido de mensajes - podría ser una actualización de estado")
                 return JSONResponse(content={"status": "ok"}, status_code=200)
 
             message = value['messages'][0]
             
             # Procesar la información del mensaje
-            number = wpp_tools.replace_start(message['from'])
+            number = wpp_tools.replace_start(message['from']) # Reestructura el numero de telefono para que sea compatible
             messageId = message['id']
             contacts = value['contacts'][0]
             name = contacts['profile']['name']
             text = wpp_tools.obtener_mensaje_whatsapp(message)
             
-            logger.info(f"\nMensaje recibido de {name} ({number}): {text}")
+            logger.info(f"\n\nMensaje recibido de {name} ({number}): {text}")
 
             # Procesar el mensaje
             text = text.lower()
@@ -132,11 +134,11 @@ async def recibir_mensajes(request: Request):
             # Marcar como leído
             read_response = wpp_tools.markRead_Message(messageId)
             response_list.append(read_response)
-            logger.debug(f"\nMensaje marcado como leído: {messageId}")
+            logger.debug(f"\n\nMensaje marcado como leído: {messageId}")
 
             # Obtener respuesta del bot
             agent_answer = agent_initializer(number, text)
-            logger.debug(f"\nRespuesta del bot: {agent_answer}")
+            logger.debug(f"\n\nRespuesta del bot: {agent_answer}")
 
             # Preparar respuesta para el usuario
             reply_data = wpp_tools.text_message(number, agent_answer)
@@ -145,16 +147,16 @@ async def recibir_mensajes(request: Request):
             # Enviar mensajes
             for item in response_list:
                 result = wpp_tools.enviar_mensaje_whatsapp(item)
-                logger.debug(f"\nResultado del envío: {result}")
+                logger.debug(f"\n\nResultado del envío: {result}")
 
             return JSONResponse(content={"status": "enviado", "message": "Mensaje procesado correctamente"}, status_code=200)
 
         except KeyError as e:
-            logger.warning(f"\nEstructura de mensaje inesperada: {str(e)}")
+            logger.warning(f"\n\nEstructura de mensaje inesperada: {str(e)}")
             return JSONResponse(content={"status": "ok"}, status_code=200)
 
     except Exception as e:
-        logger.error(f"\nError procesando mensaje: {str(e)}")
+        logger.error(f"\n\nError procesando mensaje: {str(e)}")
         # Log del error completo para debugging
         import traceback
         logger.error(traceback.format_exc())
