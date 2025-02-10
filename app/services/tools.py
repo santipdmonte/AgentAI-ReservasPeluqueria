@@ -102,7 +102,7 @@ def modificar_reserva(reservation_id: str, reservation_info: Reservation):
 
         nuevo_turno_data = {
                 "usuario_id": reservation_info.user_id,                 # UUID -> Se podria obtener del reservation_id
-                "empleado_id": "40291357-7f35-4968-a4fd-9e451a0dad0e",  # reservation_info.empleado_id,     # UUID
+                "empleado_id": "4f79dc51-2a24-4831-b0a9-919b961e30ef",  # reservation_info.empleado_id,     # UUID
                 "servicio_id": "ea685bf6-eb64-4f01-9239-3ef42402c112",  # reservation_info.servicio_id,     # UUID
                 "fecha": reservation_info.date,                         # 'YYYY-MM-DD'
                 "hora": reservation_info.time                           # 'HH:MM:SS'
