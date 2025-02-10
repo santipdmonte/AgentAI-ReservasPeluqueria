@@ -18,27 +18,44 @@ def test():
 
     return {"message": result}    
 
-@app.get("/webhook")
-def verificar_token(
-        request: Request,
-        # hub_verify_token: str = Query(..., alias="hub.verify_token"),
-        # hub_challenge: str = Query(..., alias="hub.challenge")
-        # hub_verify_token: str, 
-        # hub_challenge: str = None
-):
+# @app.get("/webhook")
+# def verificar_token(
+#         request: Request,
+#         # hub_verify_token: str = Query(..., alias="hub.verify_token"),
+#         # hub_challenge: str = Query(..., alias="hub.challenge")
+#         # hub_verify_token: str, 
+#         # hub_challenge: str = None
+# ):
 
-    # Get query parameters using their exact names from Facebook
-    verify_token = request.query_params.get("hub.verify_token")
-    challenge = request.query_params.get("hub.challenge")
+#     # Get query parameters using their exact names from Facebook
+#     verify_token = request.query_params.get("hub.verify_token")
+#     challenge = request.query_params.get("hub.challenge")
 
+#     try:
+#         if verify_token != TOKEN:
+#             raise HTTPException(status_code=403, detail="Token incorrecto")
+#         if challenge is None:
+#             raise HTTPException(status_code=403, detail="hub_challenge is null")
+#         return challenge
+#     except Exception as e:
+#         raise HTTPException(status_code=403, detail=str(e))
+
+@app.get("/webhook", response_class=PlainTextResponse)
+async def verificar_token(request: Request):
     try:
-        if verify_token != TOKEN:
-            raise HTTPException(status_code=403, detail="Token incorrecto")
-        if challenge is None:
-            raise HTTPException(status_code=403, detail="hub_challenge is null")
-        return challenge
+        # Obtener los parámetros de la manera correcta
+        params = dict(request.query_params)
+        token = params.get('hub.verify_token')
+        challenge = params.get('hub.challenge')
+
+        # Validar el token y el challenge
+        if token == sett.token and challenge is not None:
+            return challenge
+        else:
+            return PlainTextResponse('Token incorrecto', status_code=403)
+            
     except Exception as e:
-        raise HTTPException(status_code=403, detail=str(e))
+        return PlainTextResponse(str(e), status_code=403)
 
 @app.post("/webhook")
 async def recibir_mensajes(request: Request):
