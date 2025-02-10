@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, HTTPException, Query
+from fastapi.responses import PlainTextResponse
 import app.services.wpp_tools as wpp_tools
 
 from app.services.agent_initializer import agent_initializer
@@ -49,7 +50,7 @@ async def verificar_token(request: Request):
         challenge = params.get('hub.challenge')
 
         # Validar el token y el challenge
-        if token == sett.token and challenge is not None:
+        if token == TOKEN and challenge is not None:
             return challenge
         else:
             return PlainTextResponse('Token incorrecto', status_code=403)
