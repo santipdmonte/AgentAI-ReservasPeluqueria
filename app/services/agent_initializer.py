@@ -9,27 +9,27 @@ from app.config import BASE_URL
 def agent_initializer(number: str, user_input: str):
 
     phone_number = "3413918907"
-    # user_input = "15.30hs"
 
     app = create_agent()
 
 
     # ==== Setup user data ====
     try:
+
         url = f"{BASE_URL}usuarios/telefono/{phone_number}"
         print(url)
-
         response = requests.get(url)
+        print(response.json())
         if response.status_code == 200:
             user_data = response.json()
             print("Usuario encontrado: ", user_data)
-
         else:
             user_data = None
-            print("Error: ", response.status_code, response.json())
+            print(f"No se encontro usuario con el numero: {phone_number}", response.status_code, response.json())
 
     except requests.RequestException as e:
-        print("Error en la solicitud: ", e)
+        user_data = None
+        print(f"Error en la solicitud ({url}): ", e)
 
     if user_data:
         name = user_data['nombre']
@@ -37,7 +37,7 @@ def agent_initializer(number: str, user_input: str):
     else:
         # Crear un nuevo usuario
         name = None
-        user_id = None
+        user_id = '99999'
 
 
         

@@ -13,9 +13,12 @@ def bienvenido():
     return {"message": "Hola mundo"}
 
 @app.get("/test")
-def test():
+def test(
+    txt_message: str = None
+    ,number: str = "3413918907"
+    ):
 
-    result = agent_initializer(222, "si, 18hs")
+    result = agent_initializer(number, txt_message)
 
     return {"message": result}    
 
@@ -38,22 +41,26 @@ async def verificar_token(request: Request):
 
 @app.post("/webhook")
 async def recibir_mensajes(
-    request: Request,
-    txt_message: str = None):
+    request: Request
+    # ,txt_message: str = None
+    ):
     try:
+        # if txt_message:
+        #     message = txt_message
+        #     agent_answer = agent_initializer("3413918907", message)
+        #     return agent_answer
+        # return {"status": "enviado"}
+
+        text = wpp_tools.obtener_mensaje_whatsapp(message)
         body = await request.json()
         entry = body['entry'][0]
         changes = entry['changes'][0]
         value = changes['value']
         message = value['messages'][0]
-        if txt_message:
-            message = txt_message
         number = wpp_tools.replace_start(message['from'])
         messageId = message['id']
         contacts = value['contacts'][0]
         name = contacts['profile']['name']
-
-        text = wpp_tools.obtener_mensaje_whatsapp(message)
 
         
         # wpp_tools.administrar_chatbot(text, number, messageId, name)
