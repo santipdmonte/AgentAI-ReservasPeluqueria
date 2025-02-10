@@ -21,8 +21,8 @@ def test():
 @app.get("/webhook")
 def verificar_token(
         request: Request,
-        hub_verify_token: str = Query(..., alias="hub.verify_token"),
-        hub_challenge: str = Query(..., alias="hub.challenge")
+        # hub_verify_token: str = Query(..., alias="hub.verify_token"),
+        # hub_challenge: str = Query(..., alias="hub.challenge")
         # hub_verify_token: str, 
         # hub_challenge: str = None
 ):
