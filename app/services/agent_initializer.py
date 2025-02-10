@@ -17,19 +17,19 @@ def agent_initializer(number: str, user_input: str):
     try:
 
         url = f"{BASE_URL}usuarios/telefono/{phone_number}"
-        print(url)
+        print(f"\n\n URL: {url}")
         response = requests.get(url)
         print(response.json())
         if response.status_code == 200:
             user_data = response.json()
-            print("Usuario encontrado: ", user_data)
+            print("\n\nUsuario encontrado: ", user_data)
         else:
             user_data = None
-            print(f"No se encontro usuario con el numero: {phone_number}", response.status_code, response.json())
+            print(f"\n\nNo se encontro usuario con el numero: {phone_number}", response.status_code, response.json())
 
     except requests.RequestException as e:
         user_data = None
-        print(f"Error en la solicitud ({url}): ", e)
+        print(f"\n\nError en la solicitud ({url}): ", e)
 
     if user_data:
         name = user_data['nombre']

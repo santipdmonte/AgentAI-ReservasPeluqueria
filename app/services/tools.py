@@ -23,15 +23,15 @@ def crear_reserva(reservation_info: Reservation):
             json=turno_data)
 
         if response.status_code == 200:
-            print (f"Turno creado correctamente: {response.json()}")
+            print (f"\n\nTurno creado correctamente: {response.json()}")
             return (f"Turno creado correctamente: {response.json()}")
         
         else:
-            print (f"Error al crear el turno: {response.status_code} {response.json()}")
+            print (f"\n\nError al crear el turno: {response.status_code} {response.json()}")
             return (f"Error al crear el turno: {response.status_code} {response.json()}")
 
     except requests.RequestException as e:
-        print (f"Error en la solicitud al crear el turno: {e}")
+        print (f"\n\nError en la solicitud al crear el turno: {e}")
         return (f"Error en la solicitudal crear el turno: {e}")
     
 
@@ -57,15 +57,15 @@ def crear_usuario(user_info: UserInfo):
 
         if response.status_code == 200:
             user_data = response.json()
-            print (f"Uruario creado correctamente: {user_data}")
+            print (f"\n\nUruario creado correctamente: {user_data}")
             return (f"Uruario creado correctamente: {user_data}")
         
         else:
-            print(f"Error al crear el usuario: {response.status_code} {response.json()}")
+            print(f"\n\nError al crear el usuario: {response.status_code} {response.json()}")
             return (f"Error al crear el usuario: {response.status_code} {response.json()}")
 
     except requests.RequestException as e:
-        print (f"Error en la solicitud al crear el usuario: {e}")
+        print (f"\n\nError en la solicitud al crear el usuario: {e}")
         return (f"Error en la solicitud al crear el usuario: {e}")
 
 
@@ -81,15 +81,15 @@ def obtener_reservas_del_cliente(user_id: str):
 
         if response.status_code == 200:
             user_data = response.json()
-            print("Reservas encontradas: ", user_data)
+            print("\n\nReservas encontradas: ", user_data)
             return user_data
         
         else:
-            print("Error al obtener las reservas del cliente:", response.status_code, response.json())
+            print("\n\nError al obtener las reservas del cliente:", response.status_code, response.json())
             return ("Error al obtener las reservas del cliente:", response.status_code, response.json())
         
     except requests.RequestException as e:
-        print("Error en la solicitud al obtener las reservas del cliente:", e)
+        print("\n\nError en la solicitud al obtener las reservas del cliente:", e)
         return None
 
 
@@ -113,15 +113,15 @@ def modificar_reserva(reservation_id: str, reservation_info: Reservation):
 
 
         if response.status_code == 200:
-            print (f"Turno modificado correctamente: {response.json()}")
+            print (f"\n\nTurno modificado correctamente: {response.json()}")
             return (f"Turno modificado correctamente: {response.json()}")
         
         else:
-            print (f"Error al modificar el turno: {response.status_code} {response.json()}")
+            print (f"\n\nError al modificar el turno: {response.status_code} {response.json()}")
             return (f"Error al modificar el turno: {response.status_code} {response.json()}")
 
     except requests.RequestException as e:
-        print (f"Error en la solicitud al modificar el turno: {e}")
+        print (f"\n\nError en la solicitud al modificar el turno: {e}")
         return (f"Error en la solicitud al modificar el turno: {e}")
 
 
@@ -138,15 +138,15 @@ def cancelar_reserva(reservation_id: str):
 
         if response.status_code == 200:
             response_json = response.json()
-            print("Reserva cancelada con exito!")
+            print("\n\nReserva cancelada con exito!")
             return "Reserva cancelada con exito!"
         
         else:
-            print("Error al cancelar la reserva: ", response.status_code, response.json())
+            print("\n\nError al cancelar la reserva: ", response.status_code, response.json())
             return ("Error al cancelar la reserva: ", response.status_code, response.json())
         
     except requests.RequestException as e:
-        print("Error en la solicitud al cancelar la reserva: ", e)
+        print("\n\nError en la solicitud al cancelar la reserva: ", e)
         return None
 
 
@@ -166,9 +166,9 @@ def encontrar_horarios_disponibles(query: FindFreeSpaces):
             return response.json()
         
         else:
-            print("Error al buscar horarios disponibles: ", response.status_code, response.json())
+            print("\n\nError al buscar horarios disponibles: ", response.status_code, response.json())
             return ("Error:", response.status_code, response.json())
         
     except requests.RequestException as e:
-        print("Error en la solicitud al buscar horarios disponibles: ", e)
+        print("\n\nError en la solicitud al buscar horarios disponibles: ", e)
         return None
