@@ -22,8 +22,8 @@ class Services(str, Enum): # TODO: Get from database all the services
 class Reservation(BaseModel):
     user_id: str = Field(description = "ID del usuario que realiza la reserva")
     name: str = Field(description = "Nombre de la persona que hace la reserva")
-    date: str = Field(description = "Fecha de la reserva")
-    time: str = Field(description = "Hora de la reserva")
+    date: str = Field(description = "Fecha de la reserva en formato YYYY-MM-DD")
+    time: str = Field(description = "Hora de la reserva en formato HH:MM:SS")
     # hairdresser: Hairdresser = Field(description = "Peluquero con el que realizas la reserva")
     # observation: Optional[str] = Field(default=None, description = "Observacion opcional sobre la reserva")
 
