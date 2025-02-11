@@ -88,7 +88,10 @@ async def verificar_token(request: Request):
 from fastapi.responses import JSONResponse
 import logging
 # Configurar logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
+logging.getLogger("openai").setLevel(logging.WARNING)
+logging.getLogger("langchain").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 @app.post("/webhook")
@@ -97,8 +100,8 @@ async def recibir_mensajes(request: Request):
         # Obtener y loggear el body completo
         body = await request.json()
 
-        logger.debug(f"\n========= Mensaje recibido =========================== ")
-        logger.debug(f"\nMensaje recibido: \n{body}\n")
+        print(f"\n========= Mensaje recibido =========================== ")
+        print(f"\nMensaje recibido: \n{body}\n")
 
         # Validar estructura básica del mensaje
         if "entry" not in body or not body["entry"]:
@@ -113,7 +116,7 @@ async def recibir_mensajes(request: Request):
 
             # Verificar si hay mensajes
             if 'messages' not in value:
-                logger.info("\nMensaje recibido sin contenido de mensajes - podría ser una actualización de estado\n")
+                logger.warning("\nMensaje recibido sin contenido de mensajes - podría ser una actualización de estado\n")
                 return JSONResponse(content={"status": "ok"}, status_code=200)
 
             message = value['messages'][0]
@@ -125,7 +128,7 @@ async def recibir_mensajes(request: Request):
             name = contacts['profile']['name']
             text = wpp_tools.obtener_mensaje_whatsapp(message)
             
-            logger.info(f"\nMensaje recibido de {name} ({number}): {text}\n")
+            print(f"\nMensaje recibido de {name} ({number}): {text}\n")
 
             # Procesar el mensaje
             text = text.lower()
@@ -134,11 +137,11 @@ async def recibir_mensajes(request: Request):
             # Marcar como leído
             read_response = wpp_tools.markRead_Message(messageId)
             response_list.append(read_response)
-            logger.debug(f"\nMensaje marcado como leído: {messageId}\n")
+            print(f"\nMensaje marcado como leído: {messageId}\n")
 
             # Obtener respuesta del bot
             agent_answer = agent_initializer(number, text)
-            logger.debug(f"\nRespuesta del bot: {agent_answer}\n")
+            print(f"\nRespuesta del bot: {agent_answer}\n")
 
             # Preparar respuesta para el usuario
             reply_data = wpp_tools.text_message(number, agent_answer)
@@ -147,7 +150,7 @@ async def recibir_mensajes(request: Request):
             # Enviar mensajes
             for item in response_list:
                 result = wpp_tools.enviar_mensaje_whatsapp(item)
-                logger.debug(f"\nResultado del envío: {result}\n")
+                print(f"\nResultado del envío: {result}\n")
 
             return JSONResponse(content={"status": "enviado", "message": "Mensaje procesado correctamente"}, status_code=200)
 
