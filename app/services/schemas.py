@@ -20,7 +20,6 @@ class Services(str, Enum): # TODO: Get from database all the services
     CORTE_CABELLO = "Corte de cabello" # "ea685bf6-eb64-4f01-9239-3ef42402c112"
 
 class Reservation(BaseModel):
-    user_id: str = Field(description = "ID del usuario que realiza la reserva")
     name: str = Field(description = "Nombre de la persona que hace la reserva")
     date: str = Field(description = "Fecha de la reserva en formato YYYY-MM-DD")
     time: str = Field(description = "Hora de la reserva en formato HH:MM:SS")

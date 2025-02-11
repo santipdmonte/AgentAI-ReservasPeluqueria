@@ -2,18 +2,19 @@ from langchain_core.tools import tool
 from app.services.schemas import Reservation, State, FindFreeSpaces, UserInfo
 from app.config import BASE_URL
 import requests
-
+from typing_extensions import Annotated
+from langgraph.prebuilt import InjectedState
 
 @tool
-def crear_reserva(reservation_info: Reservation):
+def crear_reserva(reservation_info: Reservation, user_id: Annotated[str, InjectedState("user_id")]):
     """Confirma y crea la reserva"""
 
     try:
 
         turno_data = {
-            "usuario_id": reservation_info.user_id,                     # UUID
-            "empleado_id": "40291357-7f35-4968-a4fd-9e451a0dad0e",      #reservation_info.empleado_id,     # UUID
-            "servicio_id": "ea685bf6-eb64-4f01-9239-3ef42402c112",      #reservation_info.servicio_id,     # UUID
+            "usuario_id": user_id,                                      
+            "empleado_id": "4f79dc51-2a24-4831-b0a9-919b961e30ef",      #reservation_info.empleado_id,     # UUID
+            "servicio_id": "723927ac-d57e-481a-8de9-532d59c027cf",      #reservation_info.servicio_id,     # UUID
             "fecha": reservation_info.date,                             # 'YYYY-MM-DD'
             "hora": reservation_info.time                               # 'HH:MM:SS'
             }
@@ -71,7 +72,7 @@ def crear_usuario(user_info: UserInfo):
 
 
 @tool
-def obtener_reservas_del_cliente(user_id: str):
+def obtener_reservas_del_cliente(user_id: Annotated[str, InjectedState("user_id")]):
     """Obtenes todas las reservas de un cliente"""
 
     try:
@@ -80,9 +81,9 @@ def obtener_reservas_del_cliente(user_id: str):
         response = requests.get(url)
 
         if response.status_code == 200:
-            user_data = response.json()
-            print("\n\nReservas encontradas: ", user_data)
-            return user_data
+            reservations_data = response.json()
+            print("\n\nReservas encontradas: ", reservations_data)
+            return reservations_data
         
         else:
             print("\n\nError al obtener las reservas del cliente:", response.status_code, response.json())
@@ -95,13 +96,13 @@ def obtener_reservas_del_cliente(user_id: str):
 
 
 @tool
-def modificar_reserva(reservation_id: str, reservation_info: Reservation):
+def modificar_reserva(reservation_id: str, reservation_info: Reservation, user_id: Annotated[str, InjectedState("user_id")]):
     """Modifcar reserva"""
 
     try:
 
         nuevo_turno_data = {
-                "usuario_id": reservation_info.user_id,                 # UUID -> Se podria obtener del reservation_id
+                "usuario_id": user_id,                 # UUID -> Se podria obtener del reservation_id
                 "empleado_id": "4f79dc51-2a24-4831-b0a9-919b961e30ef",  # reservation_info.empleado_id,     # UUID
                 "servicio_id": "723927ac-d57e-481a-8de9-532d59c027cf",  # reservation_info.servicio_id,     # UUID
                 "fecha": reservation_info.date,                         # 'YYYY-MM-DD'
@@ -127,10 +128,18 @@ def modificar_reserva(reservation_id: str, reservation_info: Reservation):
 
 
 @tool
-def cancelar_reserva(reservation_id: str):
+def cancelar_reserva(reservation_id: str, user_id: Annotated[str, InjectedState("user_id")]):
     """cancelar reserva"""
 
     try:
+
+        # TODO
+        # # Validar que el usuario sea el dueño de la reserva
+        # reservas = obtener_reservas_del_cliente(user_id)
+        # if reservation_id not in reservas["id"]:
+        #     print("\n\nEl usuario no tiene una reserva con el id: ", reservation_id)
+        #     return ("El usuario no tiene una reserva con el id: ", reservation_id)
+
 
         url = f"{BASE_URL}/turnos/{reservation_id}"
 
