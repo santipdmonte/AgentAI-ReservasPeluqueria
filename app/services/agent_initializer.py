@@ -6,12 +6,9 @@ from app.config import BASE_URL
 
 
 
-def agent_initializer(number: str, user_input: str):
-
-    phone_number = "3413918907"
+def agent_initializer(phone_number: str, user_input: str):
 
     app = create_agent()
-
 
     # ==== Setup user data ====
     try:
@@ -37,7 +34,7 @@ def agent_initializer(number: str, user_input: str):
     else:
         # Crear un nuevo usuario
         name = None
-        user_id = '99999'
+        user_id = None
 
 
         
@@ -48,7 +45,7 @@ def agent_initializer(number: str, user_input: str):
         "messages": [HumanMessage(content=user_input)]
     }
 
-    config = {"configurable": {"thread_id": user_id}}
+    config = {"configurable": {"thread_id": phone_number}}
 
 
     print("\n ==================== Inicio Mensaje =================================================")
