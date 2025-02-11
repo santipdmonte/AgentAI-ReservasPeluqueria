@@ -31,5 +31,5 @@ class UserInfo(BaseModel):
     email: Optional[str] = Field(description = "Email del usuario")
 
 class FindFreeSpaces(BaseModel):
-    date: str = Field(description = "Fecha en la cual buscaremos horarios disponibles")
+    date: str = Field(description = "Fecha en la cual buscaremos horarios disponibles string en formato YYYY-MM-DD")
     # hairdresser: Optional[Hairdresser] = Field(description = "Peluquero con el que desea buscar turnos libres. Este campo es opciona, si no se especifica un peluquero no hace falta para la consulta de la herramienta")

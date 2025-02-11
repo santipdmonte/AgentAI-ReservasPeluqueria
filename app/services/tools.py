@@ -1,13 +1,19 @@
 from langchain_core.tools import tool
-from app.services.schemas import Reservation, State, FindFreeSpaces, UserInfo
+from app.services.schemas import Reservation, FindFreeSpaces, UserInfo
 from app.config import BASE_URL
 import requests
 from typing_extensions import Annotated
 from langgraph.prebuilt import InjectedState
+from typing import Optional
+
 
 @tool
-def crear_reserva(reservation_info: Reservation, user_id: Annotated[str, InjectedState("user_id")]):
+def crear_reserva(reservation_info: Reservation, user_id: Annotated[Optional[str], InjectedState("user_id")]):
     """Confirma y crea la reserva"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
 
     try:
 
@@ -39,16 +45,18 @@ def crear_reserva(reservation_info: Reservation, user_id: Annotated[str, Injecte
 
 
 @tool
-def crear_usuario(user_info: UserInfo):
+def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], InjectedState("phone_number")]):
     """Crea el usuario"""
 
-    telefono = "3413918906"
+    if not phone_number:
+        print("\n\nEl numero de telefono no se cargo correctamente, volver a intentar")
+        return ("El numero de telefono no se cargo correctamente, volver a intentar")
 
     try:
 
         user_info = {
                 "nombre": user_info.nombre,          
-                "telefono": telefono,     
+                "telefono": phone_number,     
                 "email": user_info.email,   
             }
 
@@ -59,7 +67,11 @@ def crear_usuario(user_info: UserInfo):
         if response.status_code == 200:
             user_data = response.json()
             print (f"\n\nUruario creado correctamente: {user_data}")
-            return (f"Uruario creado correctamente: {user_data}")
+            # return {
+            #     "message": f"Usuario creado correctamente: {user_data}",
+            #     "user_id": str(user_data["id"]),
+            #     "name": user_data["nombre"]
+            # }
         
         else:
             print(f"\n\nError al crear el usuario: {response.status_code} {response.json()}")
@@ -72,8 +84,12 @@ def crear_usuario(user_info: UserInfo):
 
 
 @tool
-def obtener_reservas_del_cliente(user_id: Annotated[str, InjectedState("user_id")]):
+def obtener_reservas_del_cliente(user_id: Annotated[Optional[str], InjectedState("user_id")]):
     """Obtenes todas las reservas de un cliente"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
 
     try:
 
@@ -96,8 +112,12 @@ def obtener_reservas_del_cliente(user_id: Annotated[str, InjectedState("user_id"
 
 
 @tool
-def modificar_reserva(reservation_id: str, reservation_info: Reservation, user_id: Annotated[str, InjectedState("user_id")]):
+def modificar_reserva(reservation_id: str, reservation_info: Reservation, user_id: Annotated[Optional[str], InjectedState("user_id")]):
     """Modifcar reserva"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
 
     try:
 
@@ -128,8 +148,12 @@ def modificar_reserva(reservation_id: str, reservation_info: Reservation, user_i
 
 
 @tool
-def cancelar_reserva(reservation_id: str, user_id: Annotated[str, InjectedState("user_id")]):
+def cancelar_reserva(reservation_id: str, user_id: Annotated[Optional[str], InjectedState("user_id")]):
     """cancelar reserva"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
 
     try:
 
