@@ -130,7 +130,7 @@ def modificar_reserva(reservation_id: str, reservation_info: Reservation, user_i
                 "hora": reservation_info.time                           # 'HH:MM:SS'
             }
 
-        url = f"{BASE_URL}/edit/{reservation_id}"
+        url = f"{BASE_URL}/turnos/edit/{reservation_id}"
         response = requests.put(url, json=nuevo_turno_data)
 
 
