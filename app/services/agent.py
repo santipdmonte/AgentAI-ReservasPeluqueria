@@ -65,7 +65,8 @@ def create_agent():
 
     tools = [crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, crear_usuario]
     tool_node = ToolNode(tools)
-    model = ChatOpenAI(model="gpt-4o-mini")
+    # model = ChatOpenAI(model="gpt-4o-mini")
+    model = ChatOpenAI(model="gpt-4o")
     bound_model = model.bind_tools(tools)
     workflow = StateGraph(State)
 
