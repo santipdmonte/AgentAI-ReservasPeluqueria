@@ -68,11 +68,11 @@ def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], In
         if response.status_code == 200:
             user_data = response.json()
             print (f"\n\nUruario creado correctamente: {user_data}")
-            # return {
-            #     "message": f"Usuario creado correctamente: {user_data}",
-            #     "user_id": str(user_data["id"]),
-            #     "name": user_data["nombre"]
-            # }
+            return {
+                "message": f"Usuario creado correctamente: {user_data}",
+                "user_id": str(user_data["id"]),
+                "name": user_data["nombre"]
+            }
         
         else:
             print(f"\n\nError al crear el usuario: {response.status_code} {response.json()}")
