@@ -5,6 +5,7 @@ import requests
 from typing_extensions import Annotated
 from langgraph.prebuilt import InjectedState
 from typing import Optional
+from pydantic import Field
 
 
 @tool
@@ -185,12 +186,12 @@ def cancelar_reserva(reservation_id: str, user_id: Annotated[Optional[str], Inje
 
 
 @tool
-def encontrar_horarios_disponibles(query: FindFreeSpaces):
+def encontrar_horarios_disponibles(date: str = Field(description = "Fecha en la cual buscaremos horarios disponibles string en formato YYYY-MM-DD")):#query: FindFreeSpaces):
     """Encontrar horarios disponibles"""
 
     try:
 
-        url = f"{BASE_URL}/turnos/disponibles/{query.date}"
+        url = f"{BASE_URL}/turnos/disponibles/{date}"
 
         response = requests.get(url)
 
