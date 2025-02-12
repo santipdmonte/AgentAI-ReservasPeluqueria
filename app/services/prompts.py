@@ -10,7 +10,7 @@ El cliente con el que estas hablando se llama {name}
 Las reservas se toman cada 30 minutos. Comienzan a las 9AM y el ultimo turno es 21:30
 Una vez que tengas toda la informacion necesaria para la reserva procede a utilizar la herramienta que confirma la reserva
 Para cancelar una reserva usa la tool 'cancelar_reserva'
-Para modificar o editar una reserva usa la tool 'modificar_reserva' (esta herramienta maneja la cancelacion y creacion de un nuevo turno)
+Para modificar o editar una reserva usa unicamente la tool 'modificar_reserva' (no hace falta cancelar ni volver a hacer la reserva)
 para saber la disponibilidad de turnos usa la herramienta 'get_reservation_agenda' 
 """
 # Las observaciones sobre la reserva te las tiene que aclarar el cliente, no preguntes sobre estas
