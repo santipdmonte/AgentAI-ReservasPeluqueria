@@ -4,9 +4,13 @@ import app.services.wpp_tools as wpp_tools
 
 from app.services.agent_initializer import agent_initializer
 from app.config import TOKEN
+from app.services.reminder import scheduler
 
 
 app = FastAPI(title="Agent de Peluquería", version="1.0")
+
+# Inicia el scheduler
+scheduler.start()
 
 @app.get("/bienvenido")
 def bienvenido():
