@@ -97,11 +97,7 @@ def obtener_turnos_para_dia(fecha: datetime.date):
 
 
 
-# # Inicializa el scheduler
-# scheduler = BackgroundScheduler()
-# scheduler.add_job(enviar_recordatorio, CronTrigger(hour=18, minute=0))
-# # scheduler.start() -> Inizializado en el main.py
-
-
-
-enviar_recordatorio()
+# Inicializa el scheduler
+scheduler = BackgroundScheduler()
+scheduler.add_job(enviar_recordatorio, CronTrigger(hour=18, minute=0))
+# scheduler.start() -> Inizializado en el main.py
