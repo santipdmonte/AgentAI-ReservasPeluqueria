@@ -86,7 +86,7 @@ def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], In
 
 @tool
 def obtener_reservas_del_cliente(user_id: Annotated[Optional[str], InjectedState("user_id")]):
-    """Obtenes todas las reservas de un cliente"""
+    """Obtener todas las reservas de un cliente"""
 
     if not user_id:
         print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
@@ -114,7 +114,7 @@ def obtener_reservas_del_cliente(user_id: Annotated[Optional[str], InjectedState
 
 @tool
 def modificar_reserva(reservation_id: str, reservation_info: Reservation, user_id: Annotated[Optional[str], InjectedState("user_id")]):
-    """Modifcar reserva"""
+    """Modifcar reserva: Busca disponibilidad del nuevo horario, crea la nueva reserva y cancela el reserva anterior"""
 
     if not user_id:
         print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
@@ -150,7 +150,7 @@ def modificar_reserva(reservation_id: str, reservation_info: Reservation, user_i
 
 @tool
 def cancelar_reserva(reservation_id: str, user_id: Annotated[Optional[str], InjectedState("user_id")]):
-    """cancelar reserva"""
+    """Cancela la reserva"""
 
     if not user_id:
         print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
@@ -187,7 +187,7 @@ def cancelar_reserva(reservation_id: str, user_id: Annotated[Optional[str], Inje
 
 @tool
 def encontrar_horarios_disponibles(date: str = Field(description = "Fecha en la cual buscaremos horarios disponibles string en formato YYYY-MM-DD")):#query: FindFreeSpaces):
-    """Encontrar horarios disponibles"""
+    """Encontrar horarios disponibles por fecha"""
 
     try:
 
