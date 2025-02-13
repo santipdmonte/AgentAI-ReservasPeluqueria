@@ -6,6 +6,10 @@ from typing_extensions import Annotated
 from langgraph.prebuilt import InjectedState
 from typing import Optional
 from pydantic import Field
+from langgraph.types import Command
+from langchain_core.tools import InjectedToolCallId, tool
+from langchain_core.messages import ToolMessage
+
 
 
 @tool
@@ -46,7 +50,7 @@ def crear_reserva(reservation_info: Reservation, user_id: Annotated[Optional[str
 
 
 @tool
-def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], InjectedState("phone_number")]):
+def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], InjectedState("phone_number")], tool_call_id: Annotated[str, InjectedToolCallId]):
     """Crea el usuario"""
 
     if not phone_number:
@@ -67,12 +71,15 @@ def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], In
 
         if response.status_code == 200:
             user_data = response.json()
-            print (f"\n\nUruario creado correctamente: {user_data}")
-            return {
-                "message": f"Usuario creado correctamente: {user_data}",
+            response = f"Usuario creado correctamente: {user_data}"
+            print (f"\n\n {response}")
+
+            state_update = {
                 "user_id": str(user_data["id"]),
-                "name": user_data["nombre"]
+                "name": user_data["nombre"],
+                "messages": [ToolMessage(response, tool_call_id=tool_call_id)],
             }
+            return Command(update=state_update)
         
         else:
             print(f"\n\nError al crear el usuario: {response.status_code} {response.json()}")
