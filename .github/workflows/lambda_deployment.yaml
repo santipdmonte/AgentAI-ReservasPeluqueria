@@ -18,6 +18,7 @@ jobs:
 
       - name: Copy source code to package folder
         run: |
+          mkdir package
           # Copiar todos los archivos .py desde app/
           cp -r app/*.py package/
           # Copiar archivos de subcarpetas dentro de app/
