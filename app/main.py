@@ -43,51 +43,6 @@ async def verificar_token(request: Request):
     except Exception as e:
         return PlainTextResponse(str(e), status_code=403)
 
-# @app.post("/webhook")
-# async def recibir_mensajes(
-#     request: Request
-#     # ,txt_message: str = None
-#     ):
-#     try:
-#         # if txt_message:
-#         #     message = txt_message
-#         #     agent_answer = agent_initializer("3413918907", message)
-#         #     return agent_answer
-#         # return {"status": "enviado"}
-
-#         body = await request.json()
-#         entry = body['entry'][0]
-#         changes = entry['changes'][0]
-#         value = changes['value']
-#         message = value['messages'][0]
-#         number = wpp_tools.replace_start(message['from'])
-#         messageId = message['id']
-#         contacts = value['contacts'][0]
-#         name = contacts['profile']['name']
-#         text = wpp_tools.obtener_mensaje_whatsapp(message)
-
-
-#         text = text.lower() # Mensaje que envio el usuario
-#         list = []
-
-#         # Marcar el mensaje como leído
-#         list.append(wpp_tools.markRead_Message(messageId))
-
-#         # Enviamos al bot el mensaje del usuario
-#         agent_answer = agent_initializer(number, text)
-
-#         # Enviamos la respuesta del bot al usuario
-#         listReplyData = wpp_tools.text_message(number, agent_answer)
-#         list.append(listReplyData)
-
-#         for item in list:
-#             wpp_tools.enviar_mensaje_whatsapp(item)
-
-
-#         return {"status": "enviado"}
-#     except Exception as e:
-#         raise HTTPException(status_code=400, detail=f"no enviado: {str(e)}")
-
 
 from fastapi.responses import JSONResponse
 import logging
