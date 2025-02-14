@@ -18,12 +18,9 @@ jobs:
 
       - name: Copy source code to package folder
         run: |
-          mkdir package
-          # Copiar todos los archivos .py desde app/
-          cp -r app/*.py package/
-          # Copiar archivos de subcarpetas dentro de app/
-          cp -r app/utils/*.py package/
-          cp -r app/services/*.py package/
+          mkdir -p package/app
+          # Copy the entire app directory structure
+          cp -r app/* package/app/
 
       - name: Create Zip file for Lambda function
         run: |
