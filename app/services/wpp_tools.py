@@ -1,6 +1,6 @@
 import requests
 import json
-from app.config import WHATSAPP_TOKEN, WHATSAPP_URL
+from app.config import ACCESS_TOKEN, WHATSAPP_URL
 
 # Para argentina al recibir el numero llega '549..' pero para enviar se encesita '54..'   
 def replace_start(s):
@@ -30,7 +30,7 @@ def obtener_mensaje_whatsapp(message):
 def enviar_mensaje_whatsapp(data):
     try:
         headers = {'Content-Type': 'application/json',
-                   'Authorization': 'Bearer ' + WHATSAPP_TOKEN}
+                   'Authorization': 'Bearer ' + ACCESS_TOKEN}
         print("se envia ", data)
         response = requests.post(WHATSAPP_URL, 
                                  headers=headers, 

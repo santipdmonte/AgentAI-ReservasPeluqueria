@@ -8,7 +8,7 @@ LANGCHAIN_API_KEY = os.getenv("LANGCHAIN_API_KEY")
 DB_URI = os.getenv("DATABASE_URL") 
 
 TOKEN = os.getenv("TOKEN")
-WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN") # WPP Token
 WHATSAPP_URL = os.getenv("WHATSAPP_URL")
 
 BASE_URL = os.getenv("BASE_URL")
