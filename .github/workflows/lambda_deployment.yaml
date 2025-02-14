@@ -24,8 +24,6 @@ jobs:
 
       - name: Copy source code to package folder
         run: |
-          # Copiar todos los archivos .py desde la raíz (como requirements.txt)
-          cp -r *.py package/
           # Copiar todos los archivos .py desde app/
           cp -r app/*.py package/
           # Copiar archivos de subcarpetas dentro de app/
