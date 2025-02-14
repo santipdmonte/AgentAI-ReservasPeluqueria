@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 import app.services.wpp_tools as wpp_tools
+from mangum import Mangum
 
 from app.services.agent_initializer import agent_initializer
 from app.utils.audio_to_text import audio_to_text
@@ -9,9 +10,11 @@ from app.services.reminder import scheduler
 
 
 app = FastAPI(title="Agent de Peluquería", version="1.0")
+handler = Mangum(app)
+
 
 # Inicia el scheduler
-scheduler.start()
+# scheduler.start()
 
 @app.get("/bienvenido")
 def bienvenido():
