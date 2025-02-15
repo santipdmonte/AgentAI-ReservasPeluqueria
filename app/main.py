@@ -82,15 +82,16 @@ async def recibir_mensajes(request: Request):
                 logger.warning("\nMensaje recibido sin contenido de mensajes - podría ser una actualización de estado\n")
                 return JSONResponse(content={"status": "ok"}, status_code=200)
 
-            # Verificar si hay mensajes de audio
-            if message.get("type") == "audio":
-                media_id = message.get("audio", {}).get("id")
-                print(f"\nMensaje de audio recibido: {media_id}\n")
-                logger.warning("\nEl mensaje recibido es un audio\n")
-                return JSONResponse(content={"status": "ok"}, status_code=200)
-                # message = audio_to_text(media_id)
-            else:
-                message = value['messages'][0]
+            # # Verificar si hay mensajes de audio
+            # if message.get("type") == "audio":
+            #     media_id = message.get("audio", {}).get("id")
+            #     print(f"\nMensaje de audio recibido: {media_id}\n")
+            #     logger.warning("\nEl mensaje recibido es un audio\n")
+            #     return JSONResponse(content={"status": "ok"}, status_code=200)
+            #     # message = audio_to_text(media_id)
+            # else:
+                
+            message = value['messages'][0]
             
             # Procesar la información del mensaje
             number = wpp_tools.replace_start(message['from']) # Reestructura el numero de telefono para que sea compatible
