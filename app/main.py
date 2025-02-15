@@ -7,11 +7,12 @@ from app.services.agent_initializer import agent_initializer
 # from app.utils.audio_to_text import audio_to_text
 from app.config import TOKEN
 from app.services.reminder import scheduler
+import langsmith
 
 
 app = FastAPI(title="Agent de Peluquería", version="1.0")
 handler = Mangum(app)
-
+client = langsmith.Client() # Inicializa el cliente de Langsmith
 
 # Inicia el scheduler
 # scheduler.start()
@@ -129,6 +130,8 @@ async def recibir_mensajes(request: Request):
         except KeyError as e:
             logger.warning(f"\n\nEstructura de mensaje inesperada: {str(e)}")
             return JSONResponse(content={"status": "ok"}, status_code=200)
+    
+
 
     except Exception as e:
         logger.error(f"\nError procesando mensaje: {str(e)}\n")
@@ -143,7 +146,11 @@ async def recibir_mensajes(request: Request):
                 "detail": str(e)
             },
             status_code=200  # Cambiado de 400 a 200 para evitar reintentos
-        )  
+        ) 
+
+    finally:
+        # Ensure all traces are logged
+        client.awaitPendingTraceBatches() 
 
 
 # python -m uvicorn app.main:app --reload
