@@ -108,7 +108,7 @@ async def recibir_mensajes(request: Request):
             # Marcar como leído
             mark_as_read = wpp_tools.markRead_Message(messageId)
             result = wpp_tools.send_to_whatsapp(mark_as_read)
-            print(f"\Mensaje ({messageId}) marcado como leído: {result}\n")
+            print(f"\nMensaje ({messageId}) marcado como leído: {result}\n")
             # response_list.append(read_response)
 
             # Obtener respuesta del bot
