@@ -27,7 +27,7 @@ def obtener_mensaje_whatsapp(message):
     
     return text
 
-def enviar_mensaje_whatsapp(data):
+def send_to_whatsapp(data):
     try:
         headers = {'Content-Type': 'application/json',
                    'Authorization': 'Bearer ' + ACCESS_TOKEN}

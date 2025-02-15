@@ -106,9 +106,10 @@ async def recibir_mensajes(request: Request):
             response_list = []
 
             # Marcar como leído
-            read_response = wpp_tools.markRead_Message(messageId)
-            response_list.append(read_response)
-            print(f"\nMensaje marcado como leído: {messageId}\n")
+            mark_as_read = wpp_tools.markRead_Message(messageId)
+            result = wpp_tools.send_to_whatsapp(mark_as_read)
+            print(f"\Mensaje ({messageId}) marcado como leído: {result}\n")
+            # response_list.append(read_response)
 
             # Obtener respuesta del bot
             agent_answer = agent_initializer(number, text)
@@ -119,9 +120,8 @@ async def recibir_mensajes(request: Request):
             response_list.append(reply_data)
 
             # Enviar mensajes
-            for item in response_list:
-                result = wpp_tools.enviar_mensaje_whatsapp(item)
-                print(f"\nResultado del envío: {result}\n")
+            result = wpp_tools.send_to_whatsapp(reply_data)
+            print(f"\nResultado del envío: {result}\n")
 
             return JSONResponse(content={"status": "enviado", "message": "Mensaje procesado correctamente"}, status_code=200)
 
