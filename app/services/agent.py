@@ -30,8 +30,10 @@ def create_agent():
         # Trim messages to fit within the context window
         trimmed_messages = trim_messages(
             state["messages"], 
+            token_counter=model,
             max_tokens=4000,  # Adjust based on your model's context window
             strategy="last",  # Keep the most recent messages
+            start_on="human"
         )
 
         # Format the prompt with the current state
