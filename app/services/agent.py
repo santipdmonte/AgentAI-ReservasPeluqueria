@@ -1,5 +1,5 @@
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import HumanMessage, trim_messages
 from langgraph.graph import MessagesState, StateGraph, START, END
 from langgraph.prebuilt import ToolNode
 import requests
@@ -27,6 +27,13 @@ def create_agent():
     # ==== Nodes ====
     def call_model(state: State):
 
+        # Trim messages to fit within the context window
+        trimmed_messages = trim_messages(
+            state["messages"], 
+            max_tokens=4000,  # Adjust based on your model's context window
+            strategy="last",  # Keep the most recent messages
+        )
+
         # Format the prompt with the current state
         if state["name"] and state["user_id"]:
             formatted_messages = prompt_template.format_messages(
@@ -34,7 +41,7 @@ def create_agent():
                 fecha_hora_actual = fecha_hora_actual,
                 name = state["name"],
                 user_id = state["user_id"],
-                messages = state["messages"]
+                messages = trimmed_messages
             )
         else:
             formatted_messages = prompt_template2.format_messages(
