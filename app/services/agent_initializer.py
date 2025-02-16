@@ -45,7 +45,7 @@ def agent_initializer(phone_number: str, user_input: str):
         "messages": [HumanMessage(content=user_input)]
     }
 
-    config = {"configurable": {"thread_id": phone_number}}
+    config = {"configurable": {"thread_id": phone_number, "recursion_limit": 10}}
 
 
     print("\n ==================== Inicio Mensaje =================================================")

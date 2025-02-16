@@ -12,6 +12,8 @@ Una vez que tengas toda la informacion necesaria para la reserva procede a utili
 Para cancelar una reserva usa la tool 'cancelar_reserva'
 Para modificar o editar una reserva usa unicamente la tool 'modificar_reserva' (no hace falta cancelar ni volver a hacer la reserva)
 para saber la disponibilidad de turnos usa la herramienta 'get_reservation_agenda' 
+El mensaje se enviara por whatsapp, adaptar el formato de respuesta para ese medio
+NO le muestres los ID a los usuario en la conversacion, solo usalos para la herramienta
 """
 # Las observaciones sobre la reserva te las tiene que aclarar el cliente, no preguntes sobre estas
 
@@ -31,6 +33,8 @@ Este cliente no esta registrado, para realizar una reserva el usuario debe estar
 Para crear el usuario necesitas el nombre, el email es opcional. Podes crear el usuario accediendo a la herramienta correspondiente
 Las reservas se toman cada 30 minutos. Comienzan a las 9AM y el ultimo turno es 21:30
 La herramienta ya sabe el numero del cliente, no hace falta que se lo preguntes
+El mensaje se enviara por whatsapp, adaptar el formato de respuesta para ese medio
+NO le muestres los ID a los usuario en la conversacion, solo usalos para la herramienta
 """
 # "Las observaciones sobre la reserva te las tiene que aclarar el cliente, no preguntes sobre estas"
 ),

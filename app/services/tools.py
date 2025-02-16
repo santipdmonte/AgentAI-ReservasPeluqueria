@@ -24,8 +24,8 @@ def crear_reserva(reservation_info: Reservation, user_id: Annotated[Optional[str
 
         turno_data = {
             "usuario_id": user_id,                                      
-            "empleado_id": "4f79dc51-2a24-4831-b0a9-919b961e30ef",      #reservation_info.empleado_id,     # UUID
-            "servicio_id": "723927ac-d57e-481a-8de9-532d59c027cf",      #reservation_info.servicio_id,     # UUID
+            "empleado_id": reservation_info.hairdresser_id,             # UUID
+            "servicio_id": reservation_info.service_id,                 # UUID
             "fecha": reservation_info.date,                             # 'YYYY-MM-DD'
             "hora": reservation_info.time                               # 'HH:MM:SS'
             }
@@ -60,7 +60,7 @@ def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], In
     try:
 
         user_info = {
-                "nombre": user_info.nombre,          
+                "nombre": (user_info.nombre).capitalize(),          
                 "telefono": phone_number,     
                 "email": user_info.email,   
             }
@@ -89,6 +89,46 @@ def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], In
         print (f"\n\nError en la solicitud al crear el usuario: {e}")
         return (f"Error en la solicitud al crear el usuario: {e}")
 
+
+# @tool
+# def actualizar_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], InjectedState("phone_number")], tool_call_id: Annotated[str, InjectedToolCallId]):
+#     """Actualizar datos del usuario"""
+
+#     if not user_id:
+#         print("\n\nEl id no se cargo correctamente, volver a intentar")
+#         return ("El numero de telefono no se cargo correctamente, volver a intentar")
+
+#     try:
+
+#         user_info = {
+#                 "nombre": (user_info.nombre).capitalizr(),          
+#                 "telefono": phone_number,     
+#                 "email": user_info.email,   
+#             }
+
+#         response = requests.post(
+#             f"{BASE_URL}/usuarios/", 
+#             json=user_info)
+
+#         if response.status_code == 200:
+#             user_data = response.json()
+#             response = f"Usuario creado correctamente: {user_data}"
+#             print (f"\n\n {response}")
+
+#             state_update = {
+#                 "user_id": str(user_data["id"]),
+#                 "name": user_data["nombre"],
+#                 "messages": [ToolMessage(response, tool_call_id=tool_call_id)],
+#             }
+#             return Command(update=state_update)
+        
+#         else:
+#             print(f"\n\nError al crear el usuario: {response.status_code} {response.json()}")
+#             return (f"Error al crear el usuario: {response.status_code} {response.json()}")
+
+#     except requests.RequestException as e:
+#         print (f"\n\nError en la solicitud al crear el usuario: {e}")
+#         return (f"Error en la solicitud al crear el usuario: {e}")
 
 
 @tool
@@ -191,16 +231,24 @@ def cancelar_reserva(reservation_id: str, user_id: Annotated[Optional[str], Inje
         return None
 
 
-
 @tool
-def encontrar_horarios_disponibles(date: str = Field(description = "Fecha en la cual buscaremos horarios disponibles string en formato YYYY-MM-DD")):#query: FindFreeSpaces):
-    """Encontrar horarios disponibles por fecha"""
+def encontrar_horarios_disponibles(
+    date: str = Field(description = "Fecha en la cual buscaremos horarios disponibles string en formato YYYY-MM-DD"),
+    hairdresser_id: Optional[str] = Field(description = "ID del Peluquero con el que realizas la reserva")
+):
+    """Encontrar horarios disponibles por fecha y peluquero (Opcional)"""
 
     try:
 
-        url = f"{BASE_URL}/turnos/disponibles/{date}"
 
-        response = requests.get(url)
+        data = {
+            "fecha": date,
+            "empleado_id": hairdresser_id
+        }
+
+        url = f"{BASE_URL}/turnos/disponibles"
+
+        response = requests.get(url, params=data)
 
         if response.status_code == 200:
             print("Horarios disponibles: ", response.json())
@@ -212,4 +260,50 @@ def encontrar_horarios_disponibles(date: str = Field(description = "Fecha en la 
         
     except requests.RequestException as e:
         print("\n\nError en la solicitud al buscar horarios disponibles: ", e)
+        return None
+    
+
+@tool
+def obtener_informacion_servicios():
+    """Obtener toda la informacion sobre los servicios disponibles"""
+
+    try:
+
+        url = f"{BASE_URL}/servicios"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            print("Servicios disponibles: ", response.json())
+            return response.json()
+        
+        else:
+            print("\n\nError al obtener los servicios: ", response.status_code, response.json())
+            return ("Error:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud al obtener los servicios: ", e)
+        return None
+    
+
+@tool
+def obtener_informacion_peluqueros():
+    """Obtener toda la informacion sobre los peluqueros disponibles"""
+
+    try:
+
+        url = f"{BASE_URL}/empleados"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            print("Peluqueros disponibles: ", response.json())
+            return response.json()
+        
+        else:
+            print("\n\nError al obtener los peluqueros: ", response.status_code, response.json())
+            return ("Error:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud al obtener los peluqueros: ", e)
         return None
