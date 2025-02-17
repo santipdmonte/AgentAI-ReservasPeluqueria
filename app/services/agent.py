@@ -10,9 +10,9 @@ from psycopg_pool import ConnectionPool
 
 from app.services.schemas import State
 from app.services.prompts import prompt_template, prompt_template2
-from app.services.tools import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, \
-    encontrar_horarios_disponibles, crear_usuario, obtener_informacion_servicios, obtener_informacion_peluqueros, \
-    cliente_historial, modificar_usuario
+from app.services.tools.tools_reservas import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente
+from app.services.tools.tools_usuarios import modificar_usuario, crear_usuario, historial_usuario
+from app.services.tools.tools_varias import encontrar_horarios_disponibles, obtener_informacion_servicios, obtener_informacion_peluqueros 
 
 from app.config import OPENAI_API_KEY, LANGCHAIN_API_KEY, DB_URI  
 from app.utils.helpers import fecha_hora_actual, nombre_dia
@@ -73,7 +73,7 @@ def create_agent():
 
 
     tools = [crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, \
-            crear_usuario, obtener_informacion_peluqueros, obtener_informacion_servicios, cliente_historial, modificar_usuario]
+            crear_usuario, obtener_informacion_peluqueros, obtener_informacion_servicios, historial_usuario, modificar_usuario]
     tool_node = ToolNode(tools)
     model = ChatOpenAI(model="gpt-4o-mini")
     # model = ChatOpenAI(model="gpt-4o")
