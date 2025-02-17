@@ -1,0 +1,332 @@
+from langchain_core.tools import tool
+from app.services.schemas import Reservation, FindFreeSpaces, UserInfo
+from app.config import BASE_URL
+import requests
+from typing_extensions import Annotated
+from langgraph.prebuilt import InjectedState
+from typing import Optional
+from pydantic import Field
+from langgraph.types import Command
+from langchain_core.tools import InjectedToolCallId, tool
+from langchain_core.messages import ToolMessage
+
+
+
+@tool
+def crear_reserva(reservation_info: Reservation, user_id: Annotated[Optional[str], InjectedState("user_id")]):
+    """Confirma y crea la reserva"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+
+    try:
+
+        turno_data = {
+            "usuario_id": user_id,                                      
+            "empleado_id": reservation_info.hairdresser_id,             # UUID
+            "servicio_id": reservation_info.service_id,                 # UUID
+            "fecha": reservation_info.date,                             # 'YYYY-MM-DD'
+            "hora": reservation_info.time                               # 'HH:MM:SS'
+            }
+
+        response = requests.post(
+            f"{BASE_URL}/turnos/", 
+            json=turno_data)
+
+        if response.status_code == 200:
+            print (f"\n\nTurno creado correctamente: {response.json()}")
+            return (f"Turno creado correctamente: {response.json()}")
+        
+        else:
+            print (f"\n\nError al crear el turno: {response.status_code} {response.json()}")
+            return (f"Error al crear el turno: {response.status_code} {response.json()}")
+
+    except requests.RequestException as e:
+        print (f"\n\nError en la solicitud al crear el turno: {e}")
+        return (f"Error en la solicitudal crear el turno: {e}")
+    
+
+
+
+@tool
+def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], InjectedState("phone_number")], tool_call_id: Annotated[str, InjectedToolCallId]):
+    """Crea el usuario"""
+
+    if not phone_number:
+        print("\n\nEl numero de telefono no se cargo correctamente, volver a intentar")
+        return ("El numero de telefono no se cargo correctamente, volver a intentar")
+
+    try:
+
+        user_info = {
+                "nombre": (user_info.nombre).capitalize(),          
+                "telefono": phone_number,     
+                "email": user_info.email,   
+            }
+
+        response = requests.post(
+            f"{BASE_URL}/usuarios/", 
+            json=user_info)
+
+        if response.status_code == 200:
+            user_data = response.json()
+            response = f"Usuario creado correctamente: {user_data}"
+            print (f"\n\n {response}")
+
+            state_update = {
+                "user_id": str(user_data["id"]),
+                "name": user_data["nombre"],
+                "messages": [ToolMessage(response, tool_call_id=tool_call_id)],
+            }
+            return Command(update=state_update)
+        
+        else:
+            print(f"\n\nError al crear el usuario: {response.status_code} {response.json()}")
+            return (f"Error al crear el usuario: {response.status_code} {response.json()}")
+
+    except requests.RequestException as e:
+        print (f"\n\nError en la solicitud al crear el usuario: {e}")
+        return (f"Error en la solicitud al crear el usuario: {e}")
+
+@tool
+def modificar_usuario(nombre: Optional[str], email: Optional [str], user_id: Annotated[Optional[str], InjectedState("user_id")], tool_call_id: Annotated[str, InjectedToolCallId]):
+    """Modifcar usuario: Modificar el nombre y/o email del usuario"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+
+    try:
+
+        payload = {"id": user_id}
+        
+        if nombre:
+            payload["nombre"] = nombre
+        
+        if email:
+            payload["email"] = email
+
+        response = requests.put(
+            f"{BASE_URL}/usuarios/", 
+            json=payload
+        )
+
+        if response.status_code == 200:
+            user_data = response.json()
+            print (f"\n\nUsuario modificado correctamente: {user_data}")
+            response =  (f"Usuario modificado correctamente: {user_data}")
+            state_update = {
+                "name": user_data["nombre"],
+                "messages": [ToolMessage(response, tool_call_id=tool_call_id)],
+            }
+            return Command(update=state_update)
+        
+        else:
+            print (f"\n\nError al modificar el usuario: {response.status_code} {response.json()}")
+            return (f"Error al modificar el usuario: {response.status_code} {response.json()}")
+
+    except requests.RequestException as e:
+        print (f"\n\nError en la solicitud al modificar el usuario: {e}")
+        return (f"Error en la solicitud al modificar el usuario: {e}")
+
+
+@tool
+def obtener_reservas_del_cliente(user_id: Annotated[Optional[str], InjectedState("user_id")]):
+    """Obtener todas las reservas de un cliente"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+
+    try:
+
+        url = f"{BASE_URL}/turnos/user/{user_id}"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            reservations_data = response.json()
+            print("\n\nReservas encontradas: ", reservations_data)
+            return reservations_data
+        
+        else:
+            print("\n\nError al obtener las reservas del cliente:", response.status_code, response.json())
+            return ("Error al obtener las reservas del cliente:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud al obtener las reservas del cliente:", e)
+        return None
+
+
+
+@tool
+def modificar_reserva(reservation_id: str, reservation_info: Reservation, user_id: Annotated[Optional[str], InjectedState("user_id")]):
+    """Modifcar reserva: Busca disponibilidad del nuevo horario, crea la nueva reserva y cancela el reserva anterior"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+
+    try:
+        
+        nuevo_turno_data = {
+            "usuario_id": user_id,                                      
+            "empleado_id": reservation_info.hairdresser_id,             # UUID
+            "servicio_id": reservation_info.service_id,                 # UUID
+            "fecha": reservation_info.date,                             # 'YYYY-MM-DD'
+            "hora": reservation_info.time                               # 'HH:MM:SS'
+            }
+
+        url = f"{BASE_URL}/turnos/edit/{reservation_id}"
+        response = requests.put(url, json=nuevo_turno_data)
+
+
+        if response.status_code == 200:
+            print (f"\n\nTurno modificado correctamente: {response.json()}")
+            return (f"Turno modificado correctamente: {response.json()}")
+        
+        else:
+            print (f"\n\nError al modificar el turno: {response.status_code} {response.json()}")
+            return (f"Error al modificar el turno: {response.status_code} {response.json()}")
+
+    except requests.RequestException as e:
+        print (f"\n\nError en la solicitud al modificar el turno: {e}")
+        return (f"Error en la solicitud al modificar el turno: {e}")
+
+
+
+@tool
+def cancelar_reserva(reservation_id: str, user_id: Annotated[Optional[str], InjectedState("user_id")]):
+    """Cancela la reserva"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+
+    try:
+
+        # TODO
+        # # Validar que el usuario sea el dueño de la reserva
+        # reservas = obtener_reservas_del_cliente(user_id)
+        # if reservation_id not in reservas["id"]:
+        #     print("\n\nEl usuario no tiene una reserva con el id: ", reservation_id)
+        #     return ("El usuario no tiene una reserva con el id: ", reservation_id)
+
+
+        url = f"{BASE_URL}/turnos/{reservation_id}"
+
+        response = requests.put(url)
+
+        if response.status_code == 200:
+            response_json = response.json()
+            print("\n\nReserva cancelada con exito!")
+            return "Reserva cancelada con exito!"
+        
+        else:
+            print("\n\nError al cancelar la reserva: ", response.status_code, response.json())
+            return ("Error al cancelar la reserva: ", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud al cancelar la reserva: ", e)
+        return None
+
+
+@tool
+def encontrar_horarios_disponibles(
+    date: str = Field(description = "Fecha en la cual buscaremos horarios disponibles string en formato YYYY-MM-DD"),
+    hairdresser_id: Optional[str] = Field(description = "ID del Peluquero con el que realizas la reserva")
+):
+    """Encontrar horarios disponibles por fecha y peluquero (Opcional)"""
+
+    try:
+
+
+        data = {
+            "fecha": date,
+            "empleado_id": hairdresser_id
+        }
+
+        url = f"{BASE_URL}/turnos/disponibles"
+
+        response = requests.get(url, params=data)
+
+        if response.status_code == 200:
+            print("Horarios disponibles: ", response.json())
+            return response.json()
+        
+        else:
+            print("\n\nError al buscar horarios disponibles: ", response.status_code, response.json())
+            return ("Error:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud al buscar horarios disponibles: ", e)
+        return None
+    
+
+@tool
+def obtener_informacion_servicios():
+    """Obtener toda la informacion sobre los servicios disponibles"""
+
+    try:
+
+        url = f"{BASE_URL}/servicios"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            print("Servicios disponibles: ", response.json())
+            return response.json()
+        
+        else:
+            print("\n\nError al obtener los servicios: ", response.status_code, response.json())
+            return ("Error:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud al obtener los servicios: ", e)
+        return None
+    
+
+@tool
+def obtener_informacion_peluqueros():
+    """Obtener toda la informacion sobre los peluqueros disponibles"""
+
+    try:
+
+        url = f"{BASE_URL}/empleados"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            print("Peluqueros disponibles: ", response.json())
+            return response.json()
+        
+        else:
+            print("\n\nError al obtener los peluqueros: ", response.status_code, response.json())
+            return ("Error:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud al obtener los peluqueros: ", e)
+        return None
+    
+
+@tool
+def cliente_historial(user_id: Annotated[Optional[str], InjectedState("user_id")]):
+    """Historial de turnos pasados del cliente, util para saber con que peluquero se atendio y que servicios se realizo"""
+
+    try:
+
+        url = f"{BASE_URL}/usuarios/historial/{user_id}"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            print("Ultimos 6 turnos cliente: ", response.json())
+            return response.json()
+        
+        else:
+            print("\n\nError al obtener los ultimos turnos del cliente: ", response.status_code, response.json())
+            return ("Error:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud de historial del cliente: ", e)
+        return None
