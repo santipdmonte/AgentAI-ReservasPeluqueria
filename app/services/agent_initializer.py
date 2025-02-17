@@ -1,6 +1,6 @@
 import requests
 from langchain_core.messages import HumanMessage
-import datetime
+from datetime import datetime
 
 from app.services.agent import create_agent
 from app.config import BASE_URL
