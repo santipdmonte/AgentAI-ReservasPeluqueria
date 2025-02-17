@@ -1,5 +1,6 @@
 import requests
 from langchain_core.messages import HumanMessage
+import datetime
 
 from app.services.agent import create_agent
 from app.config import BASE_URL
@@ -45,7 +46,9 @@ def agent_initializer(phone_number: str, user_input: str):
         "messages": [HumanMessage(content=user_input)]
     }
 
-    config = {"configurable": {"thread_id": phone_number, "recursion_limit": 10}}
+    fecha_hora_actual = datetime.now().strftime('%Y%m%d')
+    thread_id = f"{phone_number}|{fecha_hora_actual}"
+    config = {"configurable": {"thread_id": thread_id, "recursion_limit": 10}}
 
 
     print("\n ==================== Inicio Mensaje =================================================")
