@@ -89,6 +89,46 @@ def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], In
         print (f"\n\nError en la solicitud al crear el usuario: {e}")
         return (f"Error en la solicitud al crear el usuario: {e}")
 
+@tool
+def modificar_usuario(nombre: Optional[str], email: Optional [str], user_id: Annotated[Optional[str], InjectedState("user_id")], tool_call_id: Annotated[str, InjectedToolCallId]):
+    """Modifcar usuario: Modificar el nombre y/o email del usuario"""
+
+    if not user_id:
+        print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+        return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
+
+    try:
+
+        payload = {"id": user_id}
+        
+        if nombre:
+            payload["nombre"] = nombre
+        
+        if email:
+            payload["email"] = email
+
+        response = requests.put(
+            f"{BASE_URL}/usuarios/", 
+            json=payload
+        )
+
+        if response.status_code == 200:
+            user_data = response.json()
+            print (f"\n\nUsuario modificado correctamente: {user_data}")
+            response =  (f"Usuario modificado correctamente: {user_data}")
+            state_update = {
+                "name": user_data["nombre"],
+                "messages": [ToolMessage(response, tool_call_id=tool_call_id)],
+            }
+            return Command(update=state_update)
+        
+        else:
+            print (f"\n\nError al modificar el usuario: {response.status_code} {response.json()}")
+            return (f"Error al modificar el usuario: {response.status_code} {response.json()}")
+
+    except requests.RequestException as e:
+        print (f"\n\nError en la solicitud al modificar el usuario: {e}")
+        return (f"Error en la solicitud al modificar el usuario: {e}")
 
 # @tool
 # def actualizar_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], InjectedState("phone_number")], tool_call_id: Annotated[str, InjectedToolCallId]):
