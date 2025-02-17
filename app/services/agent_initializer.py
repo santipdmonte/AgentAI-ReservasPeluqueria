@@ -47,7 +47,7 @@ def agent_initializer(phone_number: str, user_input: str):
     }
 
     fecha_hora_actual = datetime.now().strftime('%Y%m%d')
-    thread_id = f"{phone_number}|{fecha_hora_actual}"
+    thread_id = f"{fecha_hora_actual}|{phone_number}"
     config = {"configurable": {"thread_id": thread_id, "recursion_limit": 10}}
 
 
