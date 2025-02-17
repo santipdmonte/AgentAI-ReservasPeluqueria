@@ -1,21 +1,20 @@
+import os
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, trim_messages
-from langgraph.graph import MessagesState, StateGraph, START, END
-from langgraph.prebuilt import ToolNode
-import requests
-import os
 
+from langgraph.graph import StateGraph, START, END
+from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.postgres import PostgresSaver
-# from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+
 from psycopg_pool import ConnectionPool
 
-from app.services.prompts import prompt_template, prompt_template2
-from app.services.tools import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, \
-    crear_usuario, obtener_informacion_servicios, obtener_informacion_peluqueros, cliente_historial,modificar_usuario
 from app.services.schemas import State
+from app.services.prompts import prompt_template, prompt_template2
+from app.services.tools import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, \
+    encontrar_horarios_disponibles, crear_usuario, obtener_informacion_servicios, obtener_informacion_peluqueros, \
+    cliente_historial, modificar_usuario
 
-
-from app.config import OPENAI_API_KEY, LANGCHAIN_API_KEY, BASE_URL, DB_URI  
+from app.config import OPENAI_API_KEY, LANGCHAIN_API_KEY, DB_URI  
 from app.utils.helpers import fecha_hora_actual, nombre_dia
 
 
