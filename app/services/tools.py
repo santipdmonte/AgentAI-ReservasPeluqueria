@@ -208,13 +208,13 @@ def modificar_reserva(reservation_id: str, reservation_info: Reservation, user_i
         return ("Parece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
 
     try:
-
+        
         nuevo_turno_data = {
-                "usuario_id": user_id,                 # UUID -> Se podria obtener del reservation_id
-                "empleado_id": "4f79dc51-2a24-4831-b0a9-919b961e30ef",  # reservation_info.empleado_id,     # UUID
-                "servicio_id": "723927ac-d57e-481a-8de9-532d59c027cf",  # reservation_info.servicio_id,     # UUID
-                "fecha": reservation_info.date,                         # 'YYYY-MM-DD'
-                "hora": reservation_info.time                           # 'HH:MM:SS'
+            "usuario_id": user_id,                                      
+            "empleado_id": reservation_info.hairdresser_id,             # UUID
+            "servicio_id": reservation_info.service_id,                 # UUID
+            "fecha": reservation_info.date,                             # 'YYYY-MM-DD'
+            "hora": reservation_info.time                               # 'HH:MM:SS'
             }
 
         url = f"{BASE_URL}/turnos/edit/{reservation_id}"
