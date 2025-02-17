@@ -307,3 +307,26 @@ def obtener_informacion_peluqueros():
     except requests.RequestException as e:
         print("\n\nError en la solicitud al obtener los peluqueros: ", e)
         return None
+    
+
+@tool
+def cliente_historial(user_id: Annotated[Optional[str], InjectedState("user_id")]):
+    """Historial de turnos pasados del cliente, util para saber con que peluquero se atendio y que servicios se realizo"""
+
+    try:
+
+        url = f"{BASE_URL}/usuarios/historial/{user_id}"
+
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            print("Ultimos 6 turnos cliente: ", response.json())
+            return response.json()
+        
+        else:
+            print("\n\nError al obtener los ultimos turnos del cliente: ", response.status_code, response.json())
+            return ("Error:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud de historial del cliente: ", e)
+        return None

@@ -10,7 +10,7 @@ from langgraph.checkpoint.postgres import PostgresSaver
 from psycopg_pool import ConnectionPool
 
 from app.services.prompts import prompt_template, prompt_template2
-from app.services.tools import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, crear_usuario, obtener_informacion_servicios, obtener_informacion_peluqueros
+from app.services.tools import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, crear_usuario, obtener_informacion_servicios, obtener_informacion_peluqueros, cliente_historial
 from app.services.schemas import State
 
 
@@ -72,7 +72,8 @@ def create_agent():
     
 
 
-    tools = [crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, crear_usuario, obtener_informacion_peluqueros, obtener_informacion_servicios]
+    tools = [crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, \
+            crear_usuario, obtener_informacion_peluqueros, obtener_informacion_servicios, cliente_historial]
     tool_node = ToolNode(tools)
     model = ChatOpenAI(model="gpt-4o-mini")
     # model = ChatOpenAI(model="gpt-4o")
