@@ -23,8 +23,8 @@ class Reservation(BaseModel):
     name: str = Field(description = "Nombre de la persona que hace la reserva")
     date: str = Field(description = "Fecha de la reserva en formato YYYY-MM-DD")
     time: str = Field(description = "Hora de la reserva en formato HH:MM:SS")
-    hairdresser_id: Optional[str] = Field(description = "ID del Peluquero con el que realizas la reserva")
-    service_id: Optional[str] = Field(description = "ID del Servicio que se va a realizar")
+    hairdresser_id: str = Field(description = "ID del Peluquero con el que realizas la reserva")
+    service_id: str = Field(description = "ID del Servicio que se va a realizar")
     # observation: Optional[str] = Field(default=None, description = "Observacion opcional sobre la reserva")
 
 class UserInfo(BaseModel):
