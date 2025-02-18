@@ -11,7 +11,7 @@ from langchain_core.messages import ToolMessage
 
 
 @tool
-def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], InjectedState("phone_number")], tool_call_id: Annotated[str, InjectedToolCallId]):
+def crear_usuario(nombre: str, phone_number: Annotated[Optional[str], InjectedState("phone_number")], tool_call_id: Annotated[str, InjectedToolCallId]):
     """Crea el usuario"""
 
     if not phone_number:
@@ -21,9 +21,8 @@ def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], In
     try:
 
         user_info = {
-                "nombre": (user_info.nombre).capitalize(),          
-                "telefono": phone_number,     
-                "email": user_info.email,   
+                "nombre": (nombre).capitalize(),          
+                "telefono": phone_number     
             }
 
         response = requests.post(
@@ -52,8 +51,8 @@ def crear_usuario(user_info: UserInfo, phone_number: Annotated[Optional[str], In
     
 
 @tool
-def modificar_usuario(nombre: Optional[str], email: Optional [str], user_id: Annotated[Optional[str], InjectedState("user_id")], tool_call_id: Annotated[str, InjectedToolCallId]):
-    """Modifcar usuario: Modificar el nombre y/o email del usuario"""
+def modificar_nombre_usuario(nombre: str, user_id: Annotated[Optional[str], InjectedState("user_id")], tool_call_id: Annotated[str, InjectedToolCallId]):
+    """Modifcar usuario: Modificar el nombre del usuario"""
 
     if not user_id:
         print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")
@@ -61,13 +60,7 @@ def modificar_usuario(nombre: Optional[str], email: Optional [str], user_id: Ann
 
     try:
 
-        payload = {"id": user_id}
-        
-        if nombre:
-            payload["nombre"] = nombre
-        
-        if email:
-            payload["email"] = email
+        payload = {"id": user_id}        
 
         response = requests.put(
             f"{BASE_URL}/usuarios/", 

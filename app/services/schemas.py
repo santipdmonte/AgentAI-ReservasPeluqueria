@@ -27,10 +27,6 @@ class Reservation(BaseModel):
     service_id: str = Field(description = "ID del Servicio que se va a realizar")
     # observation: Optional[str] = Field(default=None, description = "Observacion opcional sobre la reserva")
 
-class UserInfo(BaseModel):
-    nombre: str = Field(description = "Nombre del usuario")
-    email: Optional[str] = Field(description = "Email del usuario")
-
 class FindFreeSpaces(BaseModel):
     date: str = Field(description = "Fecha en la cual buscaremos horarios disponibles string en formato YYYY-MM-DD")
     hairdresser_id: Optional[str] = Field(description = "ID del Peluquero con el que realizas la reserva")
