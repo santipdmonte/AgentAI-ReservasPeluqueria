@@ -1,5 +1,4 @@
 from langchain_core.tools import tool
-from app.services.schemas import UserInfo
 from app.config import BASE_URL
 import requests
 from typing_extensions import Annotated
