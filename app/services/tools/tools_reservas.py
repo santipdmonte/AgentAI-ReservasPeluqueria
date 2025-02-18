@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from app.services.schemas import Reservation, FindFreeSpaces, UserInfo
+from app.services.schemas import Reservation
 from app.config import BASE_URL
 import requests
 from typing_extensions import Annotated
