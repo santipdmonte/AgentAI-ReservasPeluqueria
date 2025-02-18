@@ -11,7 +11,7 @@ from psycopg_pool import ConnectionPool
 from app.services.schemas import State
 from app.services.prompts import prompt_template, prompt_template2
 from app.services.tools.tools_reservas import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente
-from app.services.tools.tools_usuarios import modificar_usuario, crear_usuario, historial_usuario
+from app.services.tools.tools_usuarios import modificar_nombre_usuario, crear_usuario, historial_usuario
 from app.services.tools.tools_varias import encontrar_horarios_disponibles, obtener_informacion_servicios, obtener_informacion_peluqueros 
 
 from app.config import OPENAI_API_KEY, LANGCHAIN_API_KEY, DB_URI  
@@ -31,18 +31,17 @@ def create_agent():
         trimmed_messages = trim_messages(
             state["messages"], 
             token_counter=model,
-            max_tokens=4000,  # Adjust based on your model's context window
-            strategy="last",  # Keep the most recent messages
+            max_tokens=4000,  # Context window
+            strategy="last",  # Most recent messages
             start_on="human"
         )
 
         # Format the prompt with the current state
-        if state["name"] and state["user_id"]:
+        if state["name"]:
             formatted_messages = prompt_template.format_messages(
                 nombre_dia = nombre_dia,
                 fecha_hora_actual = fecha_hora_actual,
                 name = state["name"],
-                user_id = state["user_id"],
                 messages = trimmed_messages
             )
         else:
@@ -57,7 +56,7 @@ def create_agent():
         return {"messages": response}
 
 
-    #  Conditional Edges 
+    #  ==== Conditional Edges ====
     def should_continue(state: State):
         """Return the next node to execute."""
 
@@ -71,9 +70,9 @@ def create_agent():
         return "action"
     
 
-
+    # ==== Compile Workflow ====
     tools = [crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, \
-            crear_usuario, obtener_informacion_peluqueros, obtener_informacion_servicios, historial_usuario, modificar_usuario]
+            crear_usuario, obtener_informacion_peluqueros, obtener_informacion_servicios, historial_usuario, modificar_nombre_usuario]
     tool_node = ToolNode(tools)
     model = ChatOpenAI(model="gpt-4o-mini")
     # model = ChatOpenAI(model="gpt-4o")
