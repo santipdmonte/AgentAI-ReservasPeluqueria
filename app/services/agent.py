@@ -1,6 +1,6 @@
 import os
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, trim_messages
+from langchain_core.messages import HumanMessage
 
 from langgraph.graph import StateGraph, START, END
 from langgraph.prebuilt import ToolNode
@@ -9,13 +9,13 @@ from langgraph.checkpoint.postgres import PostgresSaver
 from psycopg_pool import ConnectionPool
 
 from app.services.schemas import State
-from app.services.prompts import prompt_template, prompt_template2
+from app.services.prompts import get_formatted_messages
 from app.services.tools.tools_reservas import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente
 from app.services.tools.tools_usuarios import modificar_nombre_usuario, crear_usuario, historial_usuario
-from app.services.tools.tools_varias import encontrar_horarios_disponibles, obtener_informacion_servicios, obtener_informacion_peluqueros 
+from app.services.tools.tools_varias import encontrar_horarios_disponibles
 
 from app.config import OPENAI_API_KEY, LANGCHAIN_API_KEY, DB_URI  
-from app.utils.helpers import fecha_hora_actual, nombre_dia
+
 
 
 def create_agent():
@@ -27,29 +27,7 @@ def create_agent():
     # ==== Nodes ====
     def call_model(state: State):
 
-        # Trim messages to fit within the context window
-        trimmed_messages = trim_messages(
-            state["messages"], 
-            token_counter=model,
-            max_tokens=4000,  # Context window
-            strategy="last",  # Most recent messages
-            start_on="human"
-        )
-
-        # Format the prompt with the current state
-        if state["name"]:
-            formatted_messages = prompt_template.format_messages(
-                nombre_dia = nombre_dia,
-                fecha_hora_actual = fecha_hora_actual,
-                name = state["name"],
-                messages = trimmed_messages
-            )
-        else:
-            formatted_messages = prompt_template2.format_messages(
-                nombre_dia = nombre_dia,
-                fecha_hora_actual = fecha_hora_actual,
-                messages = state["messages"]
-            )
+        formatted_messages = get_formatted_messages(state, model)
 
         # Call the model with formatted messages
         response = bound_model.invoke(formatted_messages)
@@ -72,7 +50,7 @@ def create_agent():
 
     # ==== Compile Workflow ====
     tools = [crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, \
-            crear_usuario, obtener_informacion_peluqueros, obtener_informacion_servicios, historial_usuario, modificar_nombre_usuario]
+            crear_usuario, historial_usuario, modificar_nombre_usuario]
     tool_node = ToolNode(tools)
     model = ChatOpenAI(model="gpt-4o-mini")
     # model = ChatOpenAI(model="gpt-4o")
