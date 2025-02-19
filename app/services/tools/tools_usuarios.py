@@ -59,7 +59,11 @@ def modificar_nombre_usuario(nombre: str, user_id: Annotated[Optional[str], Inje
 
     try:
 
-        payload = {"id": user_id}        
+        payload = {
+            "id": user_id,
+            "nombre": (nombre).capitalize()
+        }   
+   
 
         response = requests.put(
             f"{BASE_URL}/usuarios/", 
