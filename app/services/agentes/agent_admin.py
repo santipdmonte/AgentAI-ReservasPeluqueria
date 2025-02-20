@@ -10,9 +10,11 @@ from psycopg_pool import ConnectionPool
 
 from app.services.schemas import State
 from app.services.agentes.prompts_admin import get_formatted_messages
-from app.services.tools.tools_reservas import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente
-from app.services.tools.tools_usuarios import modificar_nombre_usuario, crear_usuario, historial_usuario
+from app.services.tools.tools_usuarios import modificar_nombre_usuario, historial_usuario
 from app.services.tools.tools_varias import encontrar_horarios_disponibles
+from app.services.tools.tools_servicios import obtener_informacion_servicios, crear_servicios, editar_servicio, eliminar_servicio
+from app.services.tools.tools_peluqueros import obtener_informacion_peluqueros, crear_peluquero, editar_peluquero, eliminar_peluquero
+
 
 from app.config import OPENAI_API_KEY, LANGCHAIN_API_KEY, DB_URI  
 
@@ -49,8 +51,8 @@ def create_agent_admin():
     
 
     # ==== Compile Workflow ====
-    tools = [crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente, encontrar_horarios_disponibles, \
-            crear_usuario, historial_usuario, modificar_nombre_usuario]
+    tools = [encontrar_horarios_disponibles, historial_usuario, modificar_nombre_usuario, obtener_informacion_servicios, crear_servicios, editar_servicio, eliminar_servicio /
+        obtener_informacion_peluqueros, crear_peluquero, editar_peluquero, eliminar_peluquero]
     tool_node = ToolNode(tools)
     model = ChatOpenAI(model="gpt-4o-mini")
     # model = ChatOpenAI(model="gpt-4o")

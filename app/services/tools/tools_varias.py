@@ -39,49 +39,4 @@ def encontrar_horarios_disponibles(
         print("\n\nError en la solicitud al buscar horarios disponibles: ", e)
         return None
     
-
-@tool
-def obtener_informacion_servicios():
-    """Obtener toda la informacion sobre los servicios disponibles"""
-
-    try:
-
-        url = f"{BASE_URL}/servicios"
-
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            print("Servicios disponibles: ", response.json())
-            return response.json()
-        
-        else:
-            print("\n\nError al obtener los servicios: ", response.status_code, response.json())
-            return ("Error:", response.status_code, response.json())
-        
-    except requests.RequestException as e:
-        print("\n\nError en la solicitud al obtener los servicios: ", e)
-        return None
-    
-
-@tool
-def obtener_informacion_peluqueros():
-    """Obtener toda la informacion sobre los peluqueros disponibles"""
-
-    try:
-
-        url = f"{BASE_URL}/empleados"
-
-        response = requests.get(url)
-
-        if response.status_code == 200:
-            print("Peluqueros disponibles: ", response.json())
-            return response.json()
-        
-        else:
-            print("\n\nError al obtener los peluqueros: ", response.status_code, response.json())
-            return ("Error:", response.status_code, response.json())
-        
-    except requests.RequestException as e:
-        print("\n\nError en la solicitud al obtener los peluqueros: ", e)
-        return None
     
