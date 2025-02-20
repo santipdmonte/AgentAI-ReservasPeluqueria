@@ -92,6 +92,7 @@ def editar_peluquero(
     nombre: Optional[str] = Field(None, title="Nombre del Peluquero"),
     especialidad: Optional[int] = Field(None, title="ID de la Especialidad"),
 ):
+    """Editar informacion sobre un peluquero"""
     try:
         
         url = f"{BASE_URL}/servicios/{id_pelquero}" 
