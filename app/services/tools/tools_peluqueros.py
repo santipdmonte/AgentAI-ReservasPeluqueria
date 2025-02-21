@@ -33,10 +33,17 @@ def obtener_informacion_peluqueros():
 
 @tool
 def crear_peluquero(
-    nombre: str = Field(..., title="Nombre del Peluquero"),
-    especialidad: int = Field(..., title="ID de la Especialidad"),
+    nombre: str,
+    especialidad: Optional[str],
 ):
-    """Crear un nuevo peluquero"""
+    """Crear un nuevo peluquero
+    
+    Esta herramienta crear un nuevo servicio con los siguientes campos:
+    
+    - Nombre del peluquero
+    - Especialidad (Campo opcional)
+    
+    """
 
     try:
 
@@ -63,9 +70,9 @@ def crear_peluquero(
 
 @tool
 def eliminar_peluquero(
-    id_peluquero: int = Field(..., title="ID del Peluquero"),
+    id_peluquero: str,
 ):
-    """Eliminar un peluquero"""
+    """Eliminar un peluquero: elimina un peluquero existente por su ID"""
 
     try:
 
@@ -88,20 +95,28 @@ def eliminar_peluquero(
 
 @tool   
 def editar_peluquero(
-    id_pelquero: int = Field(..., title="ID del Peluquero a editar"),
-    nombre: Optional[str] = Field(None, title="Nombre del Peluquero"),
-    especialidad: Optional[int] = Field(None, title="ID de la Especialidad"),
+    id_pelquero: str,
+    nombre: Optional[str] = None,
+    especialidad: Optional[str] = None,
 ):
-    """Editar informacion sobre un peluquero"""
+    """
+    Editar informacion sobre un peluquero existente.
+    
+    Esta herramienta permite modificar uno o más campos de un peluquero existente:
+    - Cambiar el nombre
+    - Actualizar la especialidad
+    
+    Requiere el ID del peluquero y al menos un campo para modificar.
+    """
     try:
         
-        url = f"{BASE_URL}/servicios/{id_pelquero}" 
+        url = f"{BASE_URL}/empleados/{id_pelquero}" 
 
         payload = {}
-        if nombre:
+        if nombre is not None:
             payload["nombre"] = nombre
         
-        if especialidad:
+        if especialidad is not None:
             payload["especialidad"] = especialidad
 
         if not payload:

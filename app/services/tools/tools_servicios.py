@@ -10,7 +10,7 @@ from langchain_core.tools import tool
 
 @tool
 def obtener_informacion_servicios():
-    """Obtener toda la informacion sobre los servicios disponibles"""
+    """Obtener informacion sobre los servicios disponibles"""
 
     try:
 
@@ -37,7 +37,15 @@ def crear_servicios(
     precio: float = Field(..., title="Precio del Servicio"),
     duracion: int = Field(..., title="Duracion del Servicio"),
 ):
-    """Crear un nuevo servicio"""
+    """
+    Crear un nuevo servicio:
+    
+    Esta herramienta crear un nuevo servicio con los siguientes campos:
+    
+    - Nombre del Servicio
+    - Precio del Servicio
+    - Duracion del Servicio    
+    """
 
     try:
 
@@ -45,7 +53,7 @@ def crear_servicios(
         data = {
             "nombre": nombre,
             "precio": precio,
-            "duracion": duracion
+            "duracion_minutos": duracion
         }
 
         response = requests.post(url, json=data)
@@ -65,30 +73,37 @@ def crear_servicios(
 
 @tool
 def editar_servicio(
-    nombre: Optional[str] = Field(None, title="Nombre del Servicio"),
-    precio: Optional[float] = Field(None, title="Precio del Servicio"),
-    duracion: Optional[int] = Field(None, title="Duracion del Servicio"),  
-    servicio_id: int = Field(..., title="ID del Servicio a editar")
+    servicio_id: str,
+    nombre: Optional[str] = None,
+    precio: Optional[float] = None,
+    duracion: Optional[int] = None
 ):
-    """Editar un servicio"""
-
+    """
+    Editar un servicio existente.
+    
+    Esta herramienta permite modificar uno o más aspectos de un servicio existente:
+    - Cambiar el nombre
+    - Actualizar el precio
+    - Modificar la duración
+    
+    Requiere el ID del servicio y al menos un campo para modificar.
+    """
     try:
-
         url = f"{BASE_URL}/servicios/{servicio_id}" 
 
         payload = {}
-        if nombre:
+        if nombre is not None:
             payload["nombre"] = nombre
 
-        if precio:
+        if precio is not None:
             payload["precio"] = precio
         
-        if duracion:
-            payload["duracion"] = duracion
+        if duracion is not None:
+            payload["duracion_minutos"] = duracion
 
         if not payload:
             print("\n\nNo se ha especificado ningun campo para editar")
-            return ("No se ha especificado ningun campo para editar")
+            return "No se ha especificado ningun campo para editar"
 
         response = requests.put(url, json=payload)
 
@@ -97,19 +112,22 @@ def editar_servicio(
             return response.json()
         
         else:
-            print("\n\nError al editar el servicio: ", response.status_code, response.json())
-            return ("Error:", response.status_code, response.json())
+            error_message = f"Error al editar el servicio: {response.status_code} - {response.json()}"
+            print(f"\n\n{error_message}")
+            return error_message
         
     except requests.RequestException as e:
-        print("\n\nError en la solicitud al editar el servicio: ", e)
-        return ("Error en la solicitud al editar el servicio: ", e)
+        error_message = f"Error en la solicitud al editar el servicio: {e}"
+        print(f"\n\n{error_message}")
+        return error_message
+
     
 
 @tool
 def eliminar_servicio(
-    servicio_id: str = Field(..., title="ID del Servicio a eliminar")
+    servicio_id: str
 ):
-    """Eliminar un servicio"""
+    """Eliminar un servicio: elimina un servicio existente por su ID"""
 
     try:
 

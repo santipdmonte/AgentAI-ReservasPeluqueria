@@ -3,7 +3,7 @@ from langchain_core.messages import HumanMessage
 from datetime import datetime
 
 from app.services.agent import create_agent
-from app.services.agentes.agent_admin import create_agent_admin
+from app.services.agente_admin.agent_admin import create_agent_admin
 from app.config import BASE_URL
 
 
@@ -39,7 +39,7 @@ def agent_initializer(phone_number: str, user_input: str):
 
 
     # Set Admin or User agent
-    if phone_number == '666666':     # Replace for user_data['rol'] == 'admin' 
+    if phone_number == '7777777':     # Replace for user_data['rol'] == 'admin' 
         app = create_agent_admin()
     else:
         app = create_agent()
