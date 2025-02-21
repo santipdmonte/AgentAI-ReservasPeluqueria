@@ -2,7 +2,7 @@ import requests
 from langchain_core.messages import HumanMessage
 from datetime import datetime
 
-from app.services.agent import create_agent
+from app.services.agente_user.agent_user import create_agent
 from app.services.agente_admin.agent_admin import create_agent_admin
 from app.config import BASE_URL
 

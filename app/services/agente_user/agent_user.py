@@ -9,7 +9,7 @@ from langgraph.checkpoint.postgres import PostgresSaver
 from psycopg_pool import ConnectionPool
 
 from app.services.schemas import State
-from app.services.prompts import get_formatted_messages
+from app.services.agente_user.prompts_user import get_formatted_messages
 from app.services.tools.tools_reservas import crear_reserva, cancelar_reserva, modificar_reserva, obtener_reservas_del_cliente
 from app.services.tools.tools_usuarios import modificar_nombre_usuario, crear_usuario, historial_usuario
 from app.services.tools.tools_varias import encontrar_horarios_disponibles
