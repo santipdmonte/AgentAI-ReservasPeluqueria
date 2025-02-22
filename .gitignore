@@ -10,4 +10,3 @@ app/services/__pycache__/
 *.pyo
 *.pyd
 voice_to_text_requirements.txt
-/.github/

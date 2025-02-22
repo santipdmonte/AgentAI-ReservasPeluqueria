@@ -1,0 +1,53 @@
+name: Deploy Lambda Function
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies into package folder
+        run: |
+          python -m pip install --upgrade pip
+          mkdir -p package/app/
+          pip install -r requirements.txt -t package
+
+      - name: Copy source code to package folder
+        run: |
+          # Copy the entire app directory structure
+          cp -r app/* package/app/
+
+      - name: Create Zip file for Lambda function
+        run: |
+          cd package
+          zip -r ../code.zip .
+
+      - name: Upload package to S3
+        run: |
+          aws s3 cp code.zip s3://agentailambdadeployment/agente_lambda/code.zip
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "us-east-2"
+
+      - name: Deploy to AWS Lambda using S3
+        run: |
+          aws lambda update-function-code \
+            --function-name arn:aws:lambda:us-east-2:816069150902:function:AgentAI-Reservas \
+            --s3-bucket agentailambdadeployment \
+            --s3-key agente_lambda/code.zip \
+            --region us-east-2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: "us-east-2"
