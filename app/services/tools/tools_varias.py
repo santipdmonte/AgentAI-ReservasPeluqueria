@@ -10,10 +10,16 @@ from langchain_core.tools import tool
 
 @tool
 def encontrar_horarios_disponibles(
-    date: str = Field(description = "Fecha en la cual buscaremos horarios disponibles string en formato YYYY-MM-DD"),
-    hairdresser_id: Optional[str] = Field(description = "ID del Peluquero con el que realizas la reserva")
+    date: str,
+    hairdresser_id: Optional[str] = None
 ):
-    """Encontrar horarios disponibles por fecha y peluquero (Opcional)"""
+    """Encontrar horarios disponibles:
+    
+    Esta herramienta busca horarios disponibles por fecha, y opcionalmente filtra por el id del peluquero
+    
+    - Fecha: para encontrar horarios disponibles
+    - id del peluquero: para filtrar horarios disponibles por peluquero (Campo opcional)
+    """
 
     try:
 

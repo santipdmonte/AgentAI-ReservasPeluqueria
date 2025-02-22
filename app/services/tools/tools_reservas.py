@@ -45,7 +45,7 @@ def crear_reserva(reservation_info: Reservation, user_id: Annotated[Optional[str
 
 @tool
 def obtener_reservas_del_cliente(user_id: Annotated[Optional[str], InjectedState("user_id")]):
-    """Obtener todas las reservas de un cliente"""
+    """Obtener todas las reservas proximas de un cliente"""
 
     if not user_id:
         print("\n\nParece que hubo un error al cargar el id del usuario, volver a intentar mas tarde")

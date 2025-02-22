@@ -90,7 +90,7 @@ def modificar_nombre_usuario(nombre: str, user_id: Annotated[Optional[str], Inje
     
 @tool
 def historial_usuario(user_id: Annotated[Optional[str], InjectedState("user_id")]):
-    """Historial de turnos pasados del usuario, util para saber con que peluquero se atendio y que servicios se realizo"""
+    """Historial de turnos pasados del usuario. Para saber con que peluquero se atendio y que servicios se realizo anteriormente"""
 
     try:
 
