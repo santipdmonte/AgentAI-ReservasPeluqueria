@@ -1,11 +1,18 @@
-from apscheduler.schedulers.background import BackgroundScheduler
-from apscheduler.triggers.cron import CronTrigger
-from app.services import wpp_tools
 import datetime
-
-from app.config import BASE_URL
+import json
+import os
 import requests
 
+BASE_URL = os.getenv("BASE_URL")
+WHATSAPP_URL = os.getenv("WHATSAPP_URL")
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+
+def lambda_handler(event, context):
+    enviar_recordatorio()
+    return {
+        "statusCode": 200,
+        "body": json.dumps("Recordatorios enviados con éxito")
+    }
 
 def enviar_recordatorio():
     """
@@ -46,17 +53,70 @@ def enviar_recordatorio():
         print("\n ============================ \n") 
 
         response_list = []
-        reply_data = wpp_tools.text_message(telefono,mensaje)
+        reply_data = text_message(telefono,mensaje)
         response_list.append(reply_data)
-
-        # wpp_tools.enviar_mensaje_whatsapp(reply_data)
 
          # Enviar mensajes
         for item in response_list:
-            result = wpp_tools.enviar_mensaje_whatsapp(item)
-            print(f"\nResultado del envío: {result}\n")
+            try:
+                # result = send_to_whatsapp(item)
+                # print(f"\nResultado del envío: {result}\n")
+                print (f"{item} \n")
+            except Exception as e:
+                print(f"\nError al enviar mensaje: {e}\n")
+                continue
 
     print(f"Recordatorios enviados para los turnos del {dia_siguiente}\n")
+
+
+def text_message(number,text):
+    data = json.dumps(
+            {
+                "messaging_product": "whatsapp",    
+                "recipient_type": "individual",
+                "to": number,
+                "type": "text",
+                "text": {
+                    "body": text
+                }
+            }
+    )
+    return data
+
+
+def send_to_whatsapp(data):
+    try:
+        headers = {'Content-Type': 'application/json',
+                   'Authorization': 'Bearer ' + ACCESS_TOKEN}
+        print("se envia ", data)
+        response = requests.post(WHATSAPP_URL, 
+                                 headers=headers, 
+                                 data=data)
+        
+        if response.status_code == 200:
+            return 'mensaje enviado', 200
+        else:
+            return 'error al enviar mensaje', response.status_code
+    except Exception as e:
+        return e,403
+    
+
+def send_location(number, latitude, longitude, location_name, adress):
+    data = json.dumps(
+        {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": number,
+            "type": "location",
+            "location": {
+                "latitude": latitude,
+                "longitude": longitude,
+                "name": location_name,
+                "address": adress
+            }
+        }
+    )
+    return data
 
 
 def agrupar_turnos_por_usuario(turnos):
@@ -95,9 +155,3 @@ def obtener_turnos_para_dia(fecha: datetime.date):
 
     return turnos.json()
 
-
-
-# Inicializa el scheduler
-scheduler = BackgroundScheduler()
-scheduler.add_job(enviar_recordatorio, CronTrigger(hour=18, minute=0))
-# scheduler.start() -> Inizializado en el main.py
