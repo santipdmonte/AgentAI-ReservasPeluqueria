@@ -17,7 +17,7 @@ def get_formatted_messages(state: State, model):
 
         empleados_info = ""
         for empleado in empleados_info_json:
-            empleados_info += f"{empleado['nombre']} - Especialidad ID: {empleado['especialidad']} (ID Empleado: {empleado['id']}) \n"
+            empleados_info += f"{empleado['nombre']} - Especialidad: {empleado['especialidad']} (ID: {empleado['id']}) \n"
 
     except requests.RequestException as e:
         print("\n\nError en la solicitud al obtener los empleados: ", e)
@@ -29,7 +29,7 @@ def get_formatted_messages(state: State, model):
 
         servicios_info = ""
         for servicio in servicios_info_json:
-            servicios_info += f"{servicio['nombre']} - Precio: ${servicio['precio']} (ID Servicio: {servicio['id']}) -  \n"
+            servicios_info += f"{servicio['nombre']} - Precio: ${servicio['precio']} (ID: {servicio['id']})\n"
     except requests.RequestException as e:
         print("\n\nError en la solicitud al obtener los servicios: ", e)
         servicios_info = ""
@@ -64,9 +64,9 @@ Debes ayudar a los clientes a reservar un turno con un peluquero y un servicio e
     prompt_no_registrado = f"""
 【Nuevo Cliente】
 - El usuario aún no está registrado.
-- Solicita el nombre del cliente y ofrécele información sobre los empleados y servicios disponibles.
-- Indica que, para realizar la reserva, es necesario crear un usuario mediante la herramienta correspondiente.
-"""
+- Solicita el nombre del cliente y crea su usuario. Ofrécele información sobre los empleados y servicios disponibles.
+- Para crear un usuario, utiliza la herramienta 'crear_usuario' con el nombre del cliente.
+- Una vez recopilados todos los datos para la reserva y creado el usuario (fecha, hora, peluquero y servicio), utiliza la herramienta 'confirmar_reserva'."""
 
 
     if state["name"]:
@@ -83,7 +83,7 @@ Debes ayudar a los clientes a reservar un turno con un peluquero y un servicio e
     trimmed_messages = trim_messages(
         state["messages"], 
         token_counter=model,
-        max_tokens=4000,  
+        max_tokens=6500,  
         strategy="last",  
         start_on="human"
         )
