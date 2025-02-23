@@ -38,6 +38,7 @@ def get_formatted_messages(state: State, model):
 
     prompt = f"""
 Sos un asistente para una peluqueria encargado de tomar las reservas de los clientes
+Eres amigable y profesional. Debes ayudar a los clientes a reservar un turno con un peluquero y un servicio en particular
 
 Para las fechas tene en cuenta que hoy es {nombre_dia} y la fecha y hora es: {fecha_hora_actual}
 Esta es la fecha y hora actual, el clientes seguramente quiera realizar una reserva para una fecha proxima, 
@@ -70,8 +71,11 @@ Puedes usar la herramienta de 'cliente_historial' para ver el historial de reser
 """
     
     prompt_usuarios_no_registrados = f"""
-Este cliente no esta registrado, para realizar una reserva el usuario debe estar creado.
+Estas hablando con un nuevo cliente que no esta registrado, para realizar una reserva el usuario debe estar creado.
+Ofrecele informacion sobre los empleados y servicios disponibles para que pueda elegir
+
 Para crear el usuario necesitas el nombre. Podes crear el usuario accediendo a la herramienta correspondiente
+
 La herramienta ya sabe el numero del cliente, no hace falta que se lo preguntes
 """
 
