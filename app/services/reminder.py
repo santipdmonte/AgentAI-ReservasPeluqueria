@@ -50,21 +50,17 @@ def enviar_recordatorio():
             mensaje += "\n¡Nos vemos! 🎉"
  
         print(mensaje) 
-        print("\n ============================ \n") 
+         
+        try:
+            reply_data = text_message(telefono,mensaje)
+            # result = send_to_whatsapp(reply_data)
+            # print(f"\nResultado del envío: {result}\n")
+            print (f"\n{reply_data} \n")
+        except Exception as e:
+            print(f"\nError al enviar mensaje: {e}\n")
+            continue
 
-        response_list = []
-        reply_data = text_message(telefono,mensaje)
-        response_list.append(reply_data)
-
-         # Enviar mensajes
-        for item in response_list:
-            try:
-                # result = send_to_whatsapp(item)
-                # print(f"\nResultado del envío: {result}\n")
-                print (f"{item} \n")
-            except Exception as e:
-                print(f"\nError al enviar mensaje: {e}\n")
-                continue
+        print("\n ============================ \n")
 
     print(f"Recordatorios enviados para los turnos del {dia_siguiente}\n")
 
@@ -155,3 +151,9 @@ def obtener_turnos_para_dia(fecha: datetime.date):
 
     return turnos.json()
 
+# Ejecutar la función de envío de recordatorio
+# enviar_recordatorio()
+
+# reply_data = text_message('543413918950',"Mensaje de prueba")
+# result = send_to_whatsapp(reply_data)
+# print(result)
