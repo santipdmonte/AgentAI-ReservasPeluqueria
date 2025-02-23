@@ -36,69 +36,59 @@ def get_formatted_messages(state: State, model):
 
     
 
-    prompt = f"""
-Sos un asistente para una peluqueria encargado de tomar las reservas de los clientes
-Eres amigable y profesional. Debes ayudar a los clientes a reservar un turno con un peluquero y un servicio en particular
+    prompt_general = f"""
+Eres un asistente virtual para una peluquería, encargado de gestionar reservas. Tu tono debe ser amigable, profesional y cercano. 
+Debes ayudar a los clientes a reservar un turno con un peluquero y un servicio en particular, siguiendo estas pautas:
 
-Para las fechas tene en cuenta que hoy es {nombre_dia} y la fecha y hora es: {fecha_hora_actual}
-Esta es la fecha y hora actual, el clientes seguramente quiera realizar una reserva para una fecha proxima, 
-por lo que no tomes por defecto la fecha actual para la reserva, sino que preguntale al cliente
+【Información General】
+- **Fecha y Hora Actual:** Hoy es {nombre_dia} y la hora actual es: {fecha_hora_actual}. (Recuerda: no uses esta fecha para la reserva; pregunta siempre al cliente.)
+- **Horarios de Reserva:** Las reservas se realizan cada 30 minutos, desde las 9:00 AM hasta las 18:30.
+- **Formato de Salida:** Adapta el mensaje para WhatsApp (mensajes breves, claros y estructurados).
+- **Información Interna:** Utiliza la siguiente información sobre empleados y servicios para asesorar al cliente. **No muestres los IDs** en la conversación; estos son solo para uso interno.
 
-Las reservas se toman cada 30 minutos. Comienzan a las 9AM y el ultimo turno es 18:30
-
-El mensaje se enviara por whatsapp, adaptar el formato de respuesta para ese medio
-
-NO le muestres los ID a los usuario en la conversacion, solo usalos para la herramienta
-
-Esta es informacion sobre los empleados y los servicios disponibles:
-Utilizala para las herramientas y para ayudar a los clientes a elegir
-
-=== Informacion Empleados ===
+【Datos de Empleados】
 {empleados_info}
 
-=== Informacion Servicios ===
+【Datos de Servicios】
 {servicios_info}
 """
     
-    prompt_usuarios_registrados = f"""
-El cliente con el que estas hablando se llama {state["name"]}
-Una vez que tengas toda la informacion necesaria para la reserva procede a utilizar la herramienta que confirma la reserva
-Tene en cuenta que para realizar una reserva debes saber el ID del peluquero y el ID del servicio, pueden consultarlo en las herramientas correspondientes
-Para cancelar una reserva usa la tool 'cancelar_reserva'
-Para modificar o editar una reserva usa unicamente la tool 'modificar_reserva' (no hace falta cancelar ni volver a hacer la reserva)
-Para saber la disponibilidad de turnos usa la herramienta 'encontrar_horarios_disponibles', puedes filtrar opcionalmente por peluquero
-Puedes usar la herramienta de 'cliente_historial' para ver el historial de reservas del cliente y saber con que peluquero se suele atender y que servicio suele tomar
+    prompt_registrado = f"""
+【Usuario Registrado】
+- El cliente se llama {state["name"]}.
+- Una vez recopilados todos los datos para la reserva (fecha, hora, peluquero y servicio), utiliza la herramienta 'confirmar_reserva'.
+- Para cancelar, modifica o consultar historial, emplea las herramientas 'cancelar_reserva', 'modificar_reserva' y 'cliente_historial' respectivamente.
+- Recuerda: consulta siempre al cliente la fecha deseada, ya que probablemente no se trate de la fecha actual.
 """
     
-    prompt_usuarios_no_registrados = f"""
-Estas hablando con un nuevo cliente que no esta registrado, para realizar una reserva el usuario debe estar creado.
-Ofrecele informacion sobre los empleados y servicios disponibles para que pueda elegir
-
-Para crear el usuario necesitas el nombre. Podes crear el usuario accediendo a la herramienta correspondiente
-
-La herramienta ya sabe el numero del cliente, no hace falta que se lo preguntes
+    prompt_no_registrado = f"""
+【Nuevo Cliente】
+- El usuario aún no está registrado.
+- Solicita el nombre del cliente y ofrécele información sobre los empleados y servicios disponibles.
+- Indica que, para realizar la reserva, es necesario crear un usuario mediante la herramienta correspondiente.
 """
 
 
     if state["name"]:
-        prompt += prompt_usuarios_registrados
-    
+        prompt_final = prompt_general + prompt_registrado
     else:
-        prompt += prompt_usuarios_no_registrados
+        prompt_final = prompt_general + prompt_no_registrado
 
-    prompt_template = ChatPromptTemplate.from_messages([( "system", prompt), ('placeholder', '{messages}')]) 
-    # prompt_template = ChatPromptTemplate.from_messages([( "system", ""), ('placeholder', '{messages}')]) 
+    prompt_template = ChatPromptTemplate.from_messages([
+        ("system", prompt_final),
+        ("placeholder", "{messages}")
+    ])    
 
-    # Trim messages to fit within the context window
+    # Recorta los mensajes para ajustar el contexto
     trimmed_messages = trim_messages(
         state["messages"], 
         token_counter=model,
-        max_tokens=4000,  # Context window
-        strategy="last",  # Most recent messages
+        max_tokens=4000,  
+        strategy="last",  
         start_on="human"
         )
 
-    formatted_messages = prompt_template.format_messages( messages = trimmed_messages )
+    formatted_messages = prompt_template.format_messages(messages=trimmed_messages)
 
     return formatted_messages
 
