@@ -6,14 +6,11 @@ from mangum import Mangum
 from app.services.agent_initializer import agent_initializer
 # from app.utils.audio_to_text import audio_to_text
 from app.config import TOKEN
-from app.services.reminder import scheduler
 
 
 app = FastAPI(title="Agent de Peluquería", version="1.0")
 handler = Mangum(app)
 
-# Inicia el scheduler
-# scheduler.start()
 
 @app.get("/bienvenido")
 def bienvenido():
