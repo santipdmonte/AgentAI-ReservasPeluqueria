@@ -79,6 +79,30 @@ def text_message(number,text):
     )
     return data
 
+def recordatorio_template(number):
+    data = json.dumps(
+        {
+            "messaging_product": "whatsapp",
+            "to": number,
+            "type": "template",
+            "template": {
+                "name": "reserva_recordatorio",
+                "language": {"code": "es_AR"},
+                "components": [
+                    {
+                        "type": "body",
+                        "parameters": [
+                            {"type": "text", "text": "Santiago"}, 
+                            {"type": "text", "text": "Corte de pelo"},
+                            {"type": "text", "text": "19:00"},  
+                            {"type": "text", "text": "Pedro"}
+                        ]
+                    }
+                ]
+            }
+        }
+    )
+    return data
 
 def send_to_whatsapp(data):
     try:
@@ -92,7 +116,7 @@ def send_to_whatsapp(data):
         if response.status_code == 200:
             return 'mensaje enviado', 200
         else:
-            return 'error al enviar mensaje', response.status_code
+            return 'error al enviar mensaje', response.text #.status_code
     except Exception as e:
         return e,403
     
@@ -154,6 +178,6 @@ def obtener_turnos_para_dia(fecha: datetime.date):
 # Ejecutar la función de envío de recordatorio
 # enviar_recordatorio()
 
-# reply_data = text_message('543413918950',"Mensaje de prueba")
-# result = send_to_whatsapp(reply_data)
-# print(result)
+reply_data = recordatorio_template("5493413918908")
+result = send_to_whatsapp(reply_data)
+print(result)
