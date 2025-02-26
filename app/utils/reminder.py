@@ -67,7 +67,7 @@ def recordatorio_template(number, turno_data):
                         "parameters": [
                             {"type": "text", "parameter_name": "nombre", "text": turno_data["nombre_usuario"]}, 
                             {"type": "text", "parameter_name": "servicio", "text": turno_data["servicio"]},
-                            {"type": "text", "parameter_name": "hora_turno", "text": turno_data["hora"]},  
+                            {"type": "text", "parameter_name": "hora_turno", "text": turno_data["hora"][:5]},  
                             {"type": "text", "parameter_name": "nombre_empleado", "text": turno_data["nombre_empleado"]}
                     ]
                     }
