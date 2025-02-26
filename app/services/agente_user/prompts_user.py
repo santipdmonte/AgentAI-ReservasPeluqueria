@@ -64,7 +64,7 @@ Debes ayudar a los clientes a reservar un turno con un peluquero y un servicio e
     prompt_no_registrado = f"""
 【Nuevo Cliente】
 - El usuario aún no está registrado.
-- Solicita el nombre del cliente y crea su usuario. Ofrécele información sobre los empleados y servicios disponibles.
+- Solicita el nombre del cliente, cuando te diga el nombre el cliente crea su usuario. Ofrécele información sobre los empleados y servicios disponibles.
 - Para crear un usuario, utiliza la herramienta 'crear_usuario' con el nombre del cliente.
 - Una vez recopilados todos los datos para la reserva y creado el usuario (fecha, hora, peluquero y servicio), utiliza la herramienta 'confirmar_reserva'."""
 
