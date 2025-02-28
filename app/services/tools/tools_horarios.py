@@ -6,6 +6,7 @@ from langgraph.prebuilt import InjectedState
 from typing import Optional
 from pydantic import Field
 from langchain_core.tools import tool
+from datetime import date, time
 
 
 @tool
@@ -168,20 +169,104 @@ def eliminar_horarios_recurrentes(id: str):
 
 @tool
 def bloquear_horarios(
-    date: str,
-    hora_inicio: str,
-    hora_fin: str,
-    hairdresser_id: Optional[str] = None
+    fecha: date,
+    hora_inicio: time = time(0, 0, 0),
+    hora_fin: time = time(23, 59, 59),
+    empleado_id: Optional[str] = None
     ):
     """
     Bloquea el horario de un peluquero en una fecha especifica:
-    date: Fecha a bloquear
-    hora_inicio: Hora de inicio del bloqueo
-    hora_fin: Hora de fin del bloqueo
-    hairdresser_id: Id del peluquero
+    fecha: Fecha a bloquear (YYYY-MM-DD)
+    hora_inicio: Hora de inicio del bloqueo (Opcional, por defecto se toma 00:00:00)
+    hora_fin: Hora de fin del bloqueo (Opcional, por defecto se toma 23:59:00)
+    empleado_id: Id del peluquero
 
     (Esta herramienta se utiliza para bloquear horarios de un peluquero en una fecha especifica por algun motivo especifico no recurrente)
     """
-    pass
+    try:
+
+        if hora_inicio >= hora_fin:
+            error = "La hora de inicio debe ser menor a la hora de fin"
+            print(f"\n\n{error}")
+            return (f"Error: {error}")
+        
+        if fecha < date.today():
+            error = "La fecha no puede ser anterior a la fecha actual"
+            print(f"\n\n{error}")
+            return (f"Error: {error}")
+
+        data = {
+            "fecha": fecha,
+            "empleado_id": empleado_id,
+            "hora_inicio": hora_inicio,
+            "hora_fin": hora_fin
+        }
+        
+        url = f"{BASE_URL}/horarios/bloquear"
+
+        response = requests.post(url, params=data)
+
+        if response.status_code == 200:
+            print("Bloqueo creado: ", response.json())
+            return response.json()
+        
+        else:
+            print("\n\nError al bloquar el horario: ", response.status_code, response.json())
+            return ("Error al bloquar el horario:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud al bloquar el horario: ", e)
+        return ("Error en la solicitud al bloquar el horario: ", e)
 
 
+@tool
+def desbloquear_horarios(
+    fecha: date,
+    hora_inicio: time = time(0, 0, 0),
+    hora_fin: time = time(23, 59, 59),
+    empleado_id: Optional[str] = None
+    ):
+    """
+    Desbloquear el horario previamente bloqueado de un peluquero en una fecha especifica:
+    fecha: Fecha a desbloquear (YYYY-MM-DD)
+    hora_inicio: Hora de inicio a desbloquear (Opcional, por defecto se toma 00:00:00)
+    hora_fin: Hora de fin a desbloquear (Opcional, por defecto se toma 23:59:00)
+    empleado_id: Id del peluquero
+
+    (Esta herramienta se utiliza para desbloquear horarios de un peluquero en una fecha especifica que fue previamente bloqueado. Por ejemplo, si se bloqueo un horario por error, se puede activar nuevamente)
+    (Esta herramienta NO crea nuevos horarios, solo activa los horarios previamente bloqueados)
+    """
+    try:
+
+        if hora_inicio >= hora_fin:
+            error = "La hora de inicio debe ser menor a la hora de fin"
+            print(f"\n\n{error}")
+            return (f"Error: {error}")
+        
+        if fecha < date.today():
+            error = "La fecha no puede ser anterior a la fecha actual"
+            print(f"\n\n{error}")
+            return (f"Error: {error}")
+
+        data = {
+            "fecha": fecha,
+            "empleado_id": empleado_id,
+            "hora_inicio": hora_inicio,
+            "hora_fin": hora_fin
+        }
+        
+        url = f"{BASE_URL}/horarios/desbloquear"
+
+        response = requests.post(url, params=data)
+
+        if response.status_code == 200:
+            print("Actvacion de horario: ", response.json())
+            return response.json()
+        
+        else:
+            print("\n\nError al desbloquear el horario: ", response.status_code, response.json())
+            return ("Error al desbloquear el horario:", response.status_code, response.json())
+        
+    except requests.RequestException as e:
+        print("\n\nError en la solicitud al desbloquear el horario: ", e)
+        return ("Error en la solicitud al desbloquear el horario: ", e)

@@ -13,7 +13,7 @@ from app.services.agente_admin.prompts_admin import get_formatted_messages
 from app.services.tools.tools_usuarios import modificar_nombre_usuario, historial_usuario
 from app.services.tools.tools_servicios import obtener_informacion_servicios, crear_servicios, editar_servicio, eliminar_servicio
 from app.services.tools.tools_peluqueros import obtener_informacion_peluqueros, crear_peluquero, editar_peluquero, eliminar_peluquero
-from app.services.tools.tools_horarios import crear_horarios_recurrentes_empelados, ver_horarios_recurrentes, eliminar_horarios_recurrentes
+from app.services.tools.tools_horarios import crear_horarios_recurrentes_empelados, ver_horarios_recurrentes, eliminar_horarios_recurrentes, bloquear_horarios, desbloquear_horarios
 
 
 from app.config import OPENAI_API_KEY, LANGCHAIN_API_KEY, DB_URI  
@@ -64,7 +64,9 @@ def create_agent_admin():
         eliminar_peluquero,
         crear_horarios_recurrentes_empelados, 
         ver_horarios_recurrentes, 
-        eliminar_horarios_recurrentes
+        eliminar_horarios_recurrentes,
+        bloquear_horarios,
+        desbloquear_horarios
     ]
     
     tool_node = ToolNode(tools)
