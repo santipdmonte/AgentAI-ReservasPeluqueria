@@ -126,6 +126,11 @@ async def recibir_mensajes(request: Request):
             return JSONResponse(content={"status": "enviado", "message": "Mensaje procesado correctamente"}, status_code=200)
 
         except KeyError as e:
+            # Enviar mensaje de error
+            msj_error = "Actualmente no podemos procesar tu mensaje, vuelve a intentarlo mas tarde :("
+            reply_data = wpp_tools.text_message(number, msj_error)
+            response_list.append(reply_data)
+
             logger.warning(f"\n\nEstructura de mensaje inesperada: {str(e)}")
             return JSONResponse(content={"status": "ok"}, status_code=200)
     
