@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException, Query
 from fastapi.responses import PlainTextResponse
-import app.services.wpp_tools as wpp_tools
+import app.utils.wpp_tools as wpp_tools
 from mangum import Mangum
 
 from app.services.agent_initializer import agent_initializer
