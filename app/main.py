@@ -4,11 +4,14 @@ import app.utils.wpp_tools as wpp_tools
 from mangum import Mangum
 
 from app.services.agent_initializer import agent_initializer
+from app.routes import events
 # from app.utils.audio_to_text import audio_to_text
 from app.config import TOKEN
 
 
 app = FastAPI(title="Agent de Peluquería", version="1.0")
+app.include_router(events.router)
+
 handler = Mangum(app)
 
 
