@@ -141,6 +141,11 @@ async def recibir_mensajes(request: Request):
         # Log del error completo para debugging
         import traceback
         logger.error(traceback.format_exc())
+
+        # Enviar mensaje de error
+        msj_error = "Actualmente no podemos procesar tu mensaje, vuelve a intentarlo mas tarde :("
+        reply_data = wpp_tools.text_message(number, msj_error)
+        response_list.append(reply_data)
         
         # En producción, mejor devolver 200 para evitar reintentos de WhatsApp
         return JSONResponse(
