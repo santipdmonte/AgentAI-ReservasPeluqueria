@@ -1,19 +1,8 @@
 import datetime
 import json
-import os
 import requests
-
-
-BASE_URL = os.getenv("BASE_URL")
-WHATSAPP_URL = os.getenv("WHATSAPP_URL")
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-
-def lambda_handler(event, context):
-    enviar_recordatorio()
-    return {
-        "statusCode": 200,
-        "body": json.dumps("Recordatorios enviados con éxito")
-    }
+from app.config import BASE_URL
+from app.utils.wpp_tools import send_to_whatsapp
 
 
 def enviar_recordatorio():
@@ -35,21 +24,6 @@ def enviar_recordatorio():
         except Exception as e:
             print(f"\nError al enviar mensaje: {e}\n")
             continue
-
-
-def text_message(number,text):
-    data = json.dumps(
-            {
-                "messaging_product": "whatsapp",    
-                "recipient_type": "individual",
-                "to": number,
-                "type": "text",
-                "text": {
-                    "body": text
-                }
-            }
-    )
-    return data
 
 
 def recordatorio_template(number, turno_data):
@@ -78,24 +52,6 @@ def recordatorio_template(number, turno_data):
     return data
 
 
-def send_to_whatsapp(data):
-    try:
-        headers = {'Content-Type': 'application/json',
-                   'Authorization': 'Bearer ' + ACCESS_TOKEN}
-        print("se envia ", data)
-        response = requests.post(WHATSAPP_URL, 
-                                 headers=headers, 
-                                 data=data)
-        
-        if response.status_code == 200:
-            return 'mensaje enviado', 200
-        else:
-            return 'error al enviar mensaje', response.text #.status_code
-    except Exception as e:
-        return e,403
-
-
-# Funciones de ejemplo (debes adaptarlas a tu lógica)
 def obtener_turnos_para_dia(fecha: datetime.date):
     """
     Simula la obtención de turnos para una fecha determinada.
