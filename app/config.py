@@ -14,3 +14,4 @@ WHATSAPP_URL = os.getenv("WHATSAPP_URL")
 BASE_URL = os.getenv("BASE_URL")
 
 GOOGLE_TOKEN = os.getenv("GOOGLE_TOKEN")
+
